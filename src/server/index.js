@@ -1,5 +1,12 @@
+import { createRequire } from 'module';
+import { fileURLToPath } from 'url';
+import { dirname } from 'path';
 import fs  from 'fs';
 import debug from 'debug';
+
+const require = createRequire(import.meta.url);
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const logerror = debug('tetris:error');
 const loginfo = debug('tetris:info');
@@ -7,7 +14,7 @@ const loginfo = debug('tetris:info');
 const initApp = (app, params, cb) => {
   const {host, port} = params;
   const handler = (req, res) => {
-    const file = req.url === '/bundle.js' ? '/../../build/bundle.js' : '/../../index.html';
+  const file = (req.url === '/bundle.js') ? '/../../build/bundle.js' : '/../../index.html';
 
     fs.readFile(__dirname + file, (err, data) => {
       if (err) {
@@ -44,9 +51,9 @@ export function create(params) {
     const app = require('http').createServer();
 
     initApp(app, params, () => {
-      const io = require('socket.io')(app);
+      const socket = require('socket.io')(app);
       const stop = (cb) => {
-        io.close();
+        socket.close();
         app.close(() => {
           app.unref();
         });
@@ -54,7 +61,7 @@ export function create(params) {
         cb();
       }
 
-      initEngine(io);
+      initEngine(socket);
       resolve({ stop });
     });
   });
