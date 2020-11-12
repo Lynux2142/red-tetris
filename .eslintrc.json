@@ -1,6 +1,6 @@
 {
+  "parser": "babel-eslint",
   "parserOptions": {
-    "parser": "babel-eslint",
     "ecmaVersion": 2015,
     "sourceType": "module",
     "ecmaFeatures": {
@@ -8,6 +8,7 @@
     }
   },
   "rules": {
-    "semi": "error"
+    "semi": "error",
+    "one-var-declaration-per-line": "error"
   }
 }
