@@ -25,7 +25,7 @@ const initApp = (app, params, cb) => {
       res.writeHead(200);
       res.end(data);
     });
-  }
+  };
 
   app.on('request', handler);
 
@@ -33,7 +33,7 @@ const initApp = (app, params, cb) => {
     loginfo(`tetris listen on ${params.url}`);
     cb();
   });
-}
+};
 
 const initEngine = io => {
   io.on('connection', function(socket) {
@@ -44,7 +44,7 @@ const initEngine = io => {
       }
     });
   });
-}
+};
 
 export function create(params) {
   const promise = new Promise((resolve, reject) => {
@@ -59,7 +59,7 @@ export function create(params) {
         });
         loginfo(`Engine stopped.`);
         cb();
-      }
+      };
 
       initEngine(socket);
       resolve({ stop });
