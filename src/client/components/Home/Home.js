@@ -15,25 +15,18 @@ const Home = () => {
   useEffect(() => {
     const result = regex.exec(location.hash);
 
-    socket = io(params.server.url);
     if (result) {
+      socket = io(params.server.url);
       setUname(result[2]);
       setRoom(result[1]);
+      socket.emit('join', result ? result[2] : null);
+      socket.on('newUser', (users) => {
+        setUsers(users);
+      });
     } else {
       history.push('/Login');
     }
-    socket.emit('join', result ? result[2] : null);
-    return (() => {
-      socket.emit('disconnect');
-      socket.off();
-    });
   }, [params.server.url]);
-
-  useEffect(() => {
-    socket.on('newUser', (users) => {
-      setUsers(users);
-    });
-  });
 
   return (
     <div className="Home">
