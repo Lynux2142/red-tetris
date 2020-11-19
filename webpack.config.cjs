@@ -1,11 +1,13 @@
 var path = require('path');
+//var HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
   mode: 'development',
   entry: './src/client/index.js',
   output: {
     path: path.join(__dirname, 'build'),
-    filename: 'bundle.js'
+    filename: 'bundle.js',
+    publicPath: '/'
   },
   module: {
     rules: [
@@ -19,5 +21,8 @@ module.exports = {
         }
       }
     ]
+  },
+  devServer: {
+    historyApiFallback: true
   }
 };
