@@ -1,69 +1,40 @@
+import params  from '../../params.js';
 import { createRequire } from 'module';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
-import fs  from 'fs';
 import debug from 'debug';
 
 const require = createRequire(import.meta.url);
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
 
 const logerror = debug('tetris:error');
 const loginfo = debug('tetris:info');
 
-const initApp = (app, params, cb) => {
-  const {host, port} = params;
-  const handler = (req, res) => {
-  const file = (req.url === '/bundle.js') ? '/../../build/bundle.js' : '/../../index.html';
+const express = require('express');
+const socketio = require('socket.io');
+const http = require('http');
 
-    fs.readFile(__dirname + file, (err, data) => {
-      if (err) {
-        logerror(err);
-        res.writeHead(500);
-        return res.end('Error loading index.html');
-      }
-      res.writeHead(200);
-      res.end(data);
-    });
-  }
+const app = express();
+const server = http.createServer(app);
+const io = socketio(server);
 
-  app.on('request', handler);
+const { host, port } = params.server;
 
-  app.listen({ host, port }, () => {
-    loginfo(`tetris listen on ${params.url}`);
-    cb();
+let users = {};
+
+io.on('connection', (socket) => {
+  loginfo('Socket connected: ' + socket.id);
+
+  socket.on('join', (username) => {
+    if (username) {
+      users[socket.id] = username;
+      socket.emit('newUser', users);
+      socket.broadcast.emit('newUser', users);
+    }
   });
-}
 
-const initEngine = io => {
-  io.on('connection', function(socket) {
-    loginfo("Socket connected: " + socket.id);
-    socket.on('action', (action) => {
-      if (action.type === 'server/ping'){
-        socket.emit('action', { type: 'pong' });
-      }
-    });
+  socket.on('disconnect', () => {
+    loginfo('Socket disconnected ' + socket.id);
+    delete users[socket.id];
+    socket.broadcast.emit('newUser', users);
   });
-}
+});
 
-export function create(params) {
-  const promise = new Promise((resolve, reject) => {
-    const app = require('http').createServer();
-
-    initApp(app, params, () => {
-      const socket = require('socket.io')(app);
-      const stop = (cb) => {
-        socket.close();
-        app.close(() => {
-          app.unref();
-        });
-        loginfo(`Engine stopped.`);
-        cb();
-      }
-
-      initEngine(socket);
-      resolve({ stop });
-    });
-  });
-  return (promise);
-}
+server.listen(port, host, () => loginfo(`tetris listen on ${params.server.url}`));
