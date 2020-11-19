@@ -17,12 +17,12 @@ const Home = () => {
 
     socket = io(params.server.url);
     if (result) {
-      setUname(result[1]);
-      setRoom(result[2]);
+      setUname(result[2]);
+      setRoom(result[1]);
     } else {
       history.push('/Login');
     }
-    socket.emit('join', result ? result[1] : null);
+    socket.emit('join', result ? result[2] : null);
     return (() => {
       socket.emit('disconnect');
       socket.off();

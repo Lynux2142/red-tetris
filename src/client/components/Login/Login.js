@@ -11,7 +11,7 @@ const Login = () => {
 	};
 
 	const signin = () => {
-		history.push(`/#${name}[test]`);
+		history.push(`/#test[${name}]`);
 	};
 
 	return (
