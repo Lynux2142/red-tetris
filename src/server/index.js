@@ -21,19 +21,26 @@ const { host, port } = params.server;
 
 let players = {};
 let rooms = {};
+let playertest = new Player('playertest', 1234);
+rooms['roomtest'] = new Room('roomtest', playertest);
 
 io.on('connection', (socket) => {
   loginfo('Socket connected: ' + socket.id);
 
   socket.on('addRoom', (roomName) => {
     rooms[roomName] = new Room(roomName, players[socket.id]);
-    console.log(rooms);
+    socket.emit('getMyRoom', rooms[roomName]);
     socket.emit('getRooms', rooms);
     socket.broadcast.emit('getRooms', rooms);
   });
 
+  socket.on('getRooms', () => {
+    socket.emit('getRooms', rooms);
+  });
+
   socket.on('joinRoom', (roomName) => {
     rooms[roomName].addPlayer(players[socket.id]);
+    socket.emit('getMyRoom', rooms[roomName]);
   });
 
   socket.on('leaveRoom', () => {
