@@ -1,12 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import io from 'socket.io-client';
-import params from '../../../../params.js';
-import './Game.css';
-
-let socket;
+import SocketContext from '../../containers/context';
 
 const Game = () => {
+  const socket = useContext(SocketContext);
   const [players, setPlayers] = useState({});
   const [room, setRoom] = useState({});
   const history = useHistory();
@@ -18,29 +15,27 @@ const Game = () => {
     if (!urlParams) {
       history.push('/Home');
     } else {
-      socket = io(params.server.url);
-      socket.emit('join', (urlParams[2]));
-      socket.emit('getRooms');
-      socket.on('getRooms', (rooms) => {
-        if (urlParams[1] in rooms) {
-          socket.emit('joinRoom', urlParams[1]);
+      socket.emit('getMyRoom', (error, room) => {
+        if (error) {
+          history.push('/Home');
         } else {
-          socket.emit('addRoom', urlParams[1]);
+          setRoom(room);
+          setPlayers(room.players);
         }
       });
-      socket.on('getMyRoom', (room) => {
-        setRoom(room);
-        console.log(room);
-        setPlayers(room.players);
-      });
     }
-    return (() => {
-      if (socket) {
-        socket.emit('disconnect');
-        socket.close();
-      }
+  }, [socket]);
+
+  useEffect(() => {
+    socket.on('updatePlayers', (players) => {
+      setPlayers(players);
     });
-  }, [params.server.url]);
+  }, [players]);
+
+  const leave = () => {
+    socket.emit('leaveRoom');
+    history.push('/Room');
+  };
 
   return (
     <div>
@@ -49,6 +44,7 @@ const Game = () => {
       {
         Object.keys(players).map((key, i) => <p key={i}>{players[key].name}</p>)
       }
+      <button onClick={leave}>Leave</button>
     </div>
   );
 };

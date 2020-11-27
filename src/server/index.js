@@ -24,41 +24,57 @@ let rooms = {};
 let playertest = new Player('playertest', 1234);
 rooms['roomtest'] = new Room('roomtest', playertest);
 
+const leaveRoom = (socket) => {
+  const playerRoom = players[socket.id].room;
+
+  rooms[playerRoom].removePlayer(players[socket.id]);
+  socket.to(playerRoom).broadcast.emit('updatePlayers', rooms[playerRoom].players);
+  if (rooms[playerRoom].size === 0) {
+    delete rooms[playerRoom];
+    socket.broadcast.emit('updateRooms', (rooms));
+    socket.leave(playerRoom);
+  }
+};
+
 io.on('connection', (socket) => {
   loginfo('Socket connected: ' + socket.id);
 
   socket.on('addRoom', (roomName) => {
     rooms[roomName] = new Room(roomName, players[socket.id]);
-    socket.emit('getMyRoom', rooms[roomName]);
-    socket.emit('getRooms', rooms);
-    socket.broadcast.emit('getRooms', rooms);
+    socket.join(roomName);
+    socket.broadcast.emit('updateRooms', rooms);
   });
 
-  socket.on('getRooms', () => {
-    socket.emit('getRooms', rooms);
+  socket.on('getMyRoom', (callback) => {
+    if (players[socket.id] && rooms[players[socket.id].room]) {
+      callback(false, rooms[players[socket.id].room]);
+    } else {
+      callback(true, null);
+    }
+  });
+
+  socket.on('getRooms', (callback) => {
+    callback(rooms);
   });
 
   socket.on('joinRoom', (roomName) => {
     rooms[roomName].addPlayer(players[socket.id]);
-    socket.emit('getMyRoom', rooms[roomName]);
+    socket.join(roomName);
+    socket.to(roomName).broadcast.emit('updatePlayers', rooms[roomName].players);
   });
 
   socket.on('leaveRoom', () => {
-    rooms[players[socket.id].room].removePlayer(players[socket.id]);
+    leaveRoom(socket);
   });
 
   socket.on('join', (username) => {
-    if (username) {
-      players[socket.id] = new Player(username, socket.id);
-      socket.emit('newUser', players);
-      socket.broadcast.emit('newUser', players);
-    }
+    players[socket.id] = new Player(username, socket.id);
   });
 
   socket.on('disconnect', () => {
     loginfo('Socket disconnected ' + socket.id);
     if (players[socket.id] && players[socket.id].room) {
-      rooms[players[socket.id].room].removePlayer(players[socket.id]);
+      leaveRoom(socket);
     }
     delete players[socket.id];
     socket.broadcast.emit('newUser', players);

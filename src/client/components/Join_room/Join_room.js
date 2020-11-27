@@ -1,7 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
+import SocketContext from '../../containers/context';
 
 const JoinRoom = () => {
+  const socket = useContext(SocketContext);
   const [name, setName] = useState('');
   const [room, setRoom] = useState('');
   const history = useHistory();
@@ -16,7 +18,11 @@ const JoinRoom = () => {
   };
 
   const join = () => {
-    history.push(`/#${room}[${name}]`);
+    if (name) {
+      socket.emit('join', name);
+      socket.emit('joinRoom', room);
+      history.push(`/#${room}[${name}]`);
+    }
   };
 
   return (

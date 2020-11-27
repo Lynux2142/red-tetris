@@ -1,11 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import io from 'socket.io-client';
-import params from '../../../../params.js';
-
-let socket;
+import SocketContext from '../../containers/context';
 
 const Room = () => {
+  const socket = useContext(SocketContext);
   const history = useHistory();
   const [rooms, setRooms] = useState({});
 
@@ -18,19 +16,16 @@ const Room = () => {
   };
 
   useEffect(() => {
-    socket = io(params.server.url);
-    socket.emit('getRooms');
-    return (() => {
-      socket.emit('disconnect');
-      socket.close();
-    });
-  }, [params.server.url]);
-
-  useEffect(() => {
-    socket.on('getRooms', (rooms) => {
+    socket.emit('getRooms', (rooms) => {
       setRooms(rooms);
     });
-  });
+  }, [socket]);
+
+  useEffect(() => {
+    socket.on('updateRooms', (rooms) => {
+      setRooms(rooms);
+    });
+  }, [rooms]);
 
   return (
     <div>

@@ -1,11 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import io from 'socket.io-client';
-import params from '../../../../params.js';
-
-let socket;
+import SocketContext from '../../containers/context';
 
 const New_room = () => {
+  const socket = useContext(SocketContext);
   const history = useHistory();
   const [name, setName] = useState('');
   const [room, setRoom] = useState('');
@@ -20,17 +18,11 @@ const New_room = () => {
 
   const create = () => {
     if (name && room) {
+      socket.emit('join', name);
+      socket.emit('addRoom', room);
       history.push(`/#${room}[${name}]`);
     }
   };
-
-  useEffect(() => {
-    socket = io(params.server.url);
-    return (() => {
-      socket.emit('disconnect');
-      socket.close();
-    });
-  }, [params.server.url]);
 
   return (
     <div>
