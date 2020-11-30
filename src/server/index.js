@@ -36,13 +36,26 @@ const leaveRoom = (socket) => {
   }
 };
 
+const nameAlreadyExist = (data, value) => {
+  return (
+    Object.keys(data).find(key => {
+      return (data[key].name === value);
+    }) ? true : false
+  );
+};
+
 io.on('connection', (socket) => {
   loginfo('Socket connected: ' + socket.id);
 
-  socket.on('addRoom', (roomName) => {
-    rooms[roomName] = new Room(roomName, players[socket.id]);
-    socket.join(roomName);
-    socket.broadcast.emit('updateRooms', rooms);
+  socket.on('addRoom', (roomName, callback) => {
+    const roomExist = nameAlreadyExist(rooms, roomName);
+
+    if (!roomExist) {
+      rooms[roomName] = new Room(roomName, players[socket.id]);
+      socket.join(roomName);
+      socket.broadcast.emit('updateRooms', rooms);
+    }
+    callback(roomExist);
   });
 
   socket.on('getMyRoom', (callback) => {
@@ -57,10 +70,15 @@ io.on('connection', (socket) => {
     callback(rooms);
   });
 
-  socket.on('joinRoom', (roomName) => {
-    rooms[roomName].addPlayer(players[socket.id]);
-    socket.join(roomName);
-    socket.to(roomName).broadcast.emit('updatePlayers', rooms[roomName].players);
+  socket.on('joinRoom', (roomName, callback) => {
+    const unameExist = nameAlreadyExist(rooms[roomName].players, players[socket.id].name);
+
+    if (!unameExist) {
+      rooms[roomName].addPlayer(players[socket.id]);
+      socket.join(roomName);
+      socket.to(roomName).broadcast.emit('updatePlayers', rooms[roomName].players);
+    }
+    callback(unameExist);
   });
 
   socket.on('leaveRoom', () => {

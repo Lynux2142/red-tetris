@@ -16,11 +16,18 @@ const New_room = () => {
     setRoom(e.target.value);
   };
 
-  const create = () => {
+  const create = (e) => {
+    e.preventDefault();
     if (name && room) {
       socket.emit('join', name);
-      socket.emit('addRoom', room);
-      history.push(`/#${room}[${name}]`);
+      socket.emit('addRoom', room, (error) => {
+        console.log(error);
+        if (!error) {
+          history.push(`/#${room}[${name}]`);
+        } else {
+          alert('Room name already exist');
+        }
+      });
     }
   };
 
@@ -29,7 +36,7 @@ const New_room = () => {
       <form>
         <input type='text' placeholder='Username' onChange={handleNameChange} />
         <input type='text' placeholder='Room name' onChange={handleRoomChange}/>
-        <button onClick={create}>Create</button>
+        <input type='submit' value='Create' onClick={create} />
       </form>
     </div>
   );

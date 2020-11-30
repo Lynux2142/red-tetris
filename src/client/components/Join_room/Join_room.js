@@ -17,11 +17,17 @@ const JoinRoom = () => {
     setName(e.target.value);
   };
 
-  const join = () => {
+  const join = (e) => {
+    e.preventDefault();
     if (name) {
       socket.emit('join', name);
-      socket.emit('joinRoom', room);
-      history.push(`/#${room}[${name}]`);
+      socket.emit('joinRoom', room, (error) => {
+        if (!error) {
+          history.push(`/#${room}[${name}]`);
+        } else {
+          alert('Username already taken');
+        }
+      });
     }
   };
 
@@ -31,7 +37,7 @@ const JoinRoom = () => {
       <h3>Join {room}</h3>
       <form>
         <input placeholder='Username' onChange={handleChange} />
-        <button onClick={join} >Join</button>
+        <input type='submit' value='Join' onClick={join} />
       </form>
     </div>
   );
