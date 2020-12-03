@@ -7,6 +7,7 @@ import Home from '../components/Home/Home';
 import Room from '../components/Room/Room';
 import New_room from '../components/New_room/New_room';
 import JoinRoom from '../components/Join_room/Join_room';
+import './App.css';
 
 const App = () => {
   return (

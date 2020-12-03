@@ -32,12 +32,13 @@ const JoinRoom = () => {
   };
 
   return (
-    <div>
-      <h1>bonjours je suis JoinRoom</h1>
-      <h3>Join {room}</h3>
+    <div className='container'>
+      <h1>Join "{room}"</h1>
       <form>
-        <input placeholder='Username' onChange={handleChange} />
-        <input type='submit' value='Join' onClick={join} />
+        <div className='form-group'>
+          <input className='form-control' placeholder='Username' onChange={handleChange} />
+        </div>
+        <input className='btn btn-danger' type='submit' value='Join' onClick={join} />
       </form>
     </div>
   );

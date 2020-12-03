@@ -19,6 +19,10 @@ module.exports = {
           cacheDirectory: true,
           presets: ['@babel/react']
         }
+      },
+      {
+        test: /\.css$/,
+        use: ['style-loader', 'css-loader']
       }
     ]
   },

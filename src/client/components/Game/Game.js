@@ -11,6 +11,7 @@ const Game = () => {
 
   useEffect(() => {
     const urlParams = regex.exec(location.hash);
+    console.log(urlParams);
 
     if (!urlParams) {
       history.push('/Home');
@@ -38,13 +39,12 @@ const Game = () => {
   };
 
   return (
-    <div>
-      <h1>bonjour je suis Game</h1>
-      <h3>{room.name}</h3>
+    <div className='container'>
+      <h1>{room.name}</h1>
       {
         Object.keys(players).map((key, i) => <p key={i}>{players[key].name}</p>)
       }
-      <button onClick={leave}>Leave</button>
+      <button className='btn btn-danger' onClick={leave}>Leave</button>
     </div>
   );
 };

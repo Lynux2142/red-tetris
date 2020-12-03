@@ -9,9 +9,9 @@ const Home = () => {
   };
 
   return (
-    <div className="Home">
+    <div className='container'>
       <h1>Bienvenue sur Red Tetris</h1>
-      <button onClick={play}>Play</button>
+      <button className='btn btn-danger' onClick={play}>Play</button>
     </div>
   );
 };

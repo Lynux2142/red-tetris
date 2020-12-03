@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import SocketContext from '../../containers/context';
+import './Room.css';
 
 const Room = () => {
   const socket = useContext(SocketContext);
@@ -28,18 +29,21 @@ const Room = () => {
   }, [rooms]);
 
   return (
-    <div>
-      <h1>Bonjour je suis Room</h1>
-      <h3>Room list</h3>
+    <div className='container'>
+      <h1>Room list</h1>
+      <div className='list-group mb-3'>
       {
         Object.keys(rooms).map((key, i) => {
-          return ([
-            <p key={i}>{rooms[key].name}</p>,
-            <button key={'room' + {i}} onClick={() => joinRoom(rooms[key].name)}>Join</button>
-          ]);
+          return (
+            <li className='list-group-item p-1' key={i}>
+              <label><b>{rooms[key].name}</b></label>
+              <button className='btn btn-danger float-right' onClick={() => joinRoom(rooms[key].name)}>Join</button>
+            </li>
+          );
         })
       }
-      <button onClick={create_room}>Create Room</button>
+      </div>
+      <button className='btn btn-danger' onClick={create_room}>Create New Room</button>
     </div>
   );
 };

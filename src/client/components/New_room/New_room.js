@@ -32,11 +32,16 @@ const New_room = () => {
   };
 
   return (
-    <div>
+    <div className='container'>
+      <h1>New Room Creation</h1>
       <form>
-        <input type='text' placeholder='Username' onChange={handleNameChange} />
-        <input type='text' placeholder='Room name' onChange={handleRoomChange}/>
-        <input type='submit' value='Create' onClick={create} />
+        <div className='form-group'>
+          <input className='form-control' type='text' placeholder='Username' onChange={handleNameChange} />
+        </div>
+        <div className='form-group'>
+          <input className='form-control' type='text' placeholder='Room name' onChange={handleRoomChange}/>
+        </div>
+        <input className='btn btn-danger' type='submit' value='Create' onClick={create} />
       </form>
     </div>
   );
