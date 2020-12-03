@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import SocketContext from '../../containers/context';
+import Tetris from './Tetris/Tetris';
 
 const Game = () => {
   const socket = useContext(SocketContext);
@@ -11,7 +12,6 @@ const Game = () => {
 
   useEffect(() => {
     const urlParams = regex.exec(location.hash);
-    console.log(urlParams);
 
     if (!urlParams) {
       history.push('/Home');
@@ -44,6 +44,7 @@ const Game = () => {
       {
         Object.keys(players).map((key, i) => <p key={i}>{players[key].name}</p>)
       }
+      <Tetris />
       <button className='btn btn-danger' onClick={leave}>Leave</button>
     </div>
   );

@@ -21,7 +21,6 @@ const New_room = () => {
     if (name && room) {
       socket.emit('join', name);
       socket.emit('addRoom', room, (error) => {
-        console.log(error);
         if (!error) {
           history.push(`/#${room}[${name}]`);
         } else {
