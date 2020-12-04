@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import SocketContext from '../../containers/context';
+import SocketContext from '../../containers/context.js';
 import './Room.css';
 
 const Room = () => {

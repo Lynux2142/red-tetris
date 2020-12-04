@@ -1,12 +1,12 @@
 import React, { useEffect } from 'react';
 import { BrowserRouter as Routes, Route } from 'react-router-dom';
-import socket from './socket';
-import SocketContext from './context';
-import Game from '../components/Game/Game';
-import Home from '../components/Home/Home';
-import Room from '../components/Room/Room';
-import New_room from '../components/New_room/New_room';
-import JoinRoom from '../components/Join_room/Join_room';
+import socket from './socket.js';
+import SocketContext from './context.js';
+import Game from '../components/Game/Game.js';
+import Home from '../components/Home/Home.js';
+import Room from '../components/Room/Room.js';
+import New_room from '../components/New_room/New_room.js';
+import JoinRoom from '../components/Join_room/Join_room.js';
 import './App.css';
 
 const App = () => {

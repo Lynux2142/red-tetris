@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import useInterval from './useInterval.js';
 import './Tetris.css';
 
 const Tetris = () => {
@@ -53,12 +54,9 @@ const Tetris = () => {
     setHTMLgrid(HTMLgrid);
   }, [grid]);
 
-  useEffect(() => {
-    const interval = setInterval(() => {
-      handleTimer();
-    }, 1000);
-    return (() => clearInterval(interval));
-  }, [position]);
+  useInterval(() => {
+    handleTimer();
+  }, 1000);
 
   return (
     <div>

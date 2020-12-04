@@ -1,6 +1,6 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import SocketContext from '../../containers/context';
+import SocketContext from '../../containers/context.js';
 
 const JoinRoom = () => {
   const socket = useContext(SocketContext);

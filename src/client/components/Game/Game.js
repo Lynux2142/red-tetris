@@ -1,7 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import SocketContext from '../../containers/context';
-import Tetris from './Tetris/Tetris';
+import SocketContext from '../../containers/context.js';
+import Tetris from './Tetris/Tetris.js';
 
 const Game = () => {
   const socket = useContext(SocketContext);

@@ -1,5 +1,4 @@
 var path = require('path');
-//var HtmlWebpackPlugin = require('html-webpack-plugin');
 
 module.exports = {
   mode: 'development',
@@ -10,21 +9,21 @@ module.exports = {
     publicPath: '/'
   },
   module: {
-    rules: [
-      {
-        test: /\.jsx?$/,
+    rules: [{
+      test: /\.jsx?$/,
+      exclude: /node_modules/,
+      use: {
         loader: 'babel-loader',
-        exclude: /node_modules/,
         options: {
-          cacheDirectory: true,
-          presets: ['@babel/react']
+          presets: ['@babel/react'],
+          cacheDirectory: true
         }
-      },
-      {
-        test: /\.css$/,
-        use: ['style-loader', 'css-loader']
       }
-    ]
+    },
+    {
+      test: /\.css$/,
+      use: ['style-loader', 'css-loader']
+    }]
   },
   devServer: {
     historyApiFallback: true
