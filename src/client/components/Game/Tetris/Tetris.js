@@ -6,11 +6,12 @@ const Tetris = () => {
   const WIDTH = 10;
   const HEIGHT = 20;
   const color = ['white', 'black'];
-  const [grid, setGrid] = useState(new Array(HEIGHT).fill().map((line) => new Array(WIDTH).fill(0)));
+  const [grid, setGrid] = useState(new Array(HEIGHT).fill().map(line => new Array(WIDTH).fill(0)));
   const [HTMLgrid, setHTMLgrid] = useState([]);
   const [position, setPosition] = useState({x: 4, y: HEIGHT - 1});
 
   const move = (initial, next) => {
+    setPosition({...next});
     grid[initial.y][initial.x] = 0;
     grid[next.y][next.x] = 1;
     setGrid([...grid]);
@@ -19,20 +20,16 @@ const Tetris = () => {
   const handlerKeydown = (e) => {
     if (e.key === 'ArrowLeft' && position.x > 0) {
       move(position, {...position, x: position.x - 1});
-      setPosition({...position, x: position.x - 1});
     } else if (e.key === 'ArrowRight' && position.x < WIDTH - 1) {
       move(position, {...position, x: position.x + 1});
-      setPosition({...position, x: position.x + 1});
     }
   };
 
   const handleTimer = () => {
     if (position.y + 1 < HEIGHT) {
       move(position, {...position, y: position.y + 1});
-      setPosition({...position, y: position.y + 1});
     } else {
       move(position, {...position, y: 0});
-      setPosition({...position, y: 0});
     }
   };
 
