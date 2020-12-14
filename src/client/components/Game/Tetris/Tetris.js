@@ -7,7 +7,7 @@ import './Tetris.css';
 const Tetris = () => {
   const WIDTH = 10;
   const HEIGHT = 20;
-  const tetriList = [new Bar(new Mat2(3, 0)), new Ji(new Mat2(3, 0)), new El(new Mat2(3, 0)), new Cube(new Mat2(3, 0)), new Es(new Mat2(3, 0)), new Pyra(new Mat2(3, 0)), new Zi(new Mat2(3, 0))];
+  const tetriList = [new Bar(new Mat2(3, -1)), new Ji(new Mat2(3, 0)), new El(new Mat2(3, 0)), new Cube(new Mat2(3, 0)), new Es(new Mat2(3, 0)), new Pyra(new Mat2(3, 0)), new Zi(new Mat2(3, 0))];
   const [tetri, setTetri] = useState(tetriList[Math.round(Math.random() * 6)]);
   const [backGrid, setBackGrid] = useState(new Array(HEIGHT).fill().map(row => new Array(WIDTH).fill('white')));
   const [frontGrid, setFrontGrid] = useState(new Array(HEIGHT).fill().map(row => new Array(WIDTH).fill(0)));
@@ -28,6 +28,17 @@ const Tetris = () => {
       newGrid[newTetri.position.y + value.y][newTetri.position.x + value.x] = 1;
     });
     setFrontGrid([...newGrid]);
+  };
+
+  const removeCompletLine = () => {
+    let newGrid = [...backGrid];
+    backGrid.map((row, i) => {
+      if (!row.find(value => value === 'white')) {
+        newGrid.splice(i, 1);
+        newGrid.splice(0, 0, new Array(WIDTH).fill('white'));
+      }
+    });
+    setBackGrid(newGrid);
   };
 
   const handlerKeydown = (e) => {
@@ -52,12 +63,16 @@ const Tetris = () => {
         tetri.tetri.map(value => {
           newGrid[tetri.position.y + value.y][tetri.position.x + value.x] = tetri.color;
         });
-        if (testCollision(newTetri)) {
+        setBackGrid([...newGrid]);
+        if (!testCollision(newTetri)) {
+          removeCompletLine();
+          fillTetri(newTetri);
+        } else {
           alert('Game Over');
           newGrid = newGrid.map(row => row.map(value => 'white'));
-          setBackGrid([...newGrid]);
+          setBackGrid(newGrid);
+          fillTetri(newTetri);
         }
-        fillTetri(newTetri);
       }
     }
   };
@@ -82,11 +97,27 @@ const Tetris = () => {
     setHTMLgrid(HTMLgrid);
   }, [frontGrid]);
 
-  /*
   useInterval(() => {
-    fillTetri(tetri.moveDown());
+    if (!testCollision(tetri.moveDown())) {
+      fillTetri(tetri.moveDown());
+    } else {
+      let newGrid = [...backGrid];
+      let newTetri = tetriList[Math.round(Math.random() * 6)];
+      tetri.tetri.map(value => {
+        newGrid[tetri.position.y + value.y][tetri.position.x + value.x] = tetri.color;
+      });
+      setBackGrid([...newGrid]);
+      if (!testCollision(newTetri)) {
+        removeCompletLine();
+        fillTetri(newTetri);
+      } else {
+        alert('Game Over');
+        newGrid = newGrid.map(row => row.map(value => 'white'));
+        setBackGrid(newGrid);
+        fillTetri(newTetri);
+      }
+    }
   }, 1000);
-  */
 
   return (
     <div>
