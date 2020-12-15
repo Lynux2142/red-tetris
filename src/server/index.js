@@ -89,7 +89,6 @@ const initEngine = (io) => {
 
     socket.on('joinRoom', (roomName, callback) => {
       const unameExist = nameAlreadyExist(rooms[roomName].players, players[socket.id].name);
-      logerror("Let's join this room");
 
       if (!unameExist) {
         rooms[roomName].addPlayer(players[socket.id]);
