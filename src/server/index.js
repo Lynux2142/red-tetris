@@ -49,12 +49,12 @@ const initApp = (app, params, cb) => {
         res.writeHead(500);
         return (res.end('Error loading index.html'));
       }
-      res.writeHead(200);
+      res.writeHead(200, {"Content-Type": (file.search('index') !== -1) ? "text/html" : "text/javascript"});
       res.end(data);
     });
   };
   app.on('request', handler);
-  app.listen(port, host, () => {
+  app.listen({ port, host }, () => {
     loginfo(`tetri listen on ${params.url}`);
     cb();
   });
@@ -121,7 +121,7 @@ export function create(params) {
   const promise = new Promise((resolve, reject) => {
     const app = require('http').createServer(require('express'));
     initApp(app, params, () => {
-      const io = require('socket.io')(app);
+      const io = require('socket.io')(app, { cookie: false });
       const stop = (cb) => {
         io.close();
         app.close(() => {
@@ -131,6 +131,7 @@ export function create(params) {
         cb();
       };
       initEngine(io);
+      resolve({ stop });
     });
   });
   return (promise);

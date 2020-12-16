@@ -2,6 +2,8 @@ import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import SocketContext from '../../containers/context.js';
 import Tetris from './Tetris/Tetris.js';
+import useSound from 'use-sound';
+import TetrisSound from '../../../../tetris.mp3';
 
 const Game = () => {
   const socket = useContext(SocketContext);
@@ -9,6 +11,8 @@ const Game = () => {
   const [room, setRoom] = useState({});
   const history = useHistory();
   const regex = /#([a-zA-Z]+)\[([a-zA-Z]+)\]/;
+  const [volume, setVolume] = useState(0.1);
+  const [play, { stop }] = useSound(TetrisSound, { volume });
 
   useEffect(() => {
     const urlParams = regex.exec(location.hash);
@@ -33,9 +37,20 @@ const Game = () => {
     });
   }, [players]);
 
+  useEffect(() => {
+    play();
+    return(() => {
+      stop();
+    });
+  }, [play]);
+
   const leave = () => {
     socket.emit('leaveRoom');
     history.push('/Room');
+  };
+
+  const muteMusic = () => {
+    setVolume((volume === 0.1) ? 0 : 0.1);
   };
 
   return (
@@ -44,6 +59,7 @@ const Game = () => {
       {
         Object.keys(players).map((key, i) => <p key={i}>{players[key].name}</p>)
       }
+      <button className='btn btn-danger' onClick={muteMusic}>Mute</button>
       <Tetris />
       <button className='btn btn-danger' onClick={leave}>Leave</button>
     </div>
