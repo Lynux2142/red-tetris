@@ -7,7 +7,7 @@
   "scripts": {
     "server-dev": "DEBUG=tetris:* babel-watch -w src src/server/main.js",
     "server-dist": "DEBUG=tetris:* babel --presets @babel/react src --out-dir dist",
-    "client-dev": "webpack serve --hot --inline --host localhost --port 8080",
+    "client-dev": "webpack serve --hot --inline --host 192.168.0.29 --port 8080",
     "client-dist": "NODE_ENV=production webpack --progress --color",
     "start": "DEBUG=tetris:* node dist/server/main.js"
   },

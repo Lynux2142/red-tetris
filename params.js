@@ -1,7 +1,7 @@
 const params = {
   server: {
-    host: 'localhost',
-    port: 3004,
+    host: 'https://lynux-perudo.herokuapp.com',
+    port: 80,
     get url(){ return ('http://' + this.host + ':' + this.port); }
   },
 };

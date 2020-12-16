@@ -50,7 +50,15 @@ const Game = () => {
   };
 
   const muteMusic = () => {
-    setVolume((volume === 0.1) ? 0 : 0.1);
+    setVolume((volume === 0) ? 0.1 : 0);
+  };
+
+  const decrease = () => {
+    setVolume(volume - 0.01);
+  };
+
+  const increase = () => {
+    setVolume(volume + 0.01);
   };
 
   return (
@@ -59,7 +67,9 @@ const Game = () => {
       {
         Object.keys(players).map((key, i) => <p key={i}>{players[key].name}</p>)
       }
+      <button className='btn btn-danger' onClick={decrease}>-</button>
       <button className='btn btn-danger' onClick={muteMusic}>Mute</button>
+      <button className='btn btn-danger' onClick={increase}>+</button>
       <Tetris />
       <button className='btn btn-danger' onClick={leave}>Leave</button>
     </div>
