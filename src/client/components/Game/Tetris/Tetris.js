@@ -12,6 +12,7 @@ const Tetris = () => {
   const [backGrid, setBackGrid] = useState(new Array(HEIGHT).fill().map(row => new Array(WIDTH).fill('white')));
   const [frontGrid, setFrontGrid] = useState(new Array(HEIGHT).fill().map(row => new Array(WIDTH).fill(0)));
   const [HTMLgrid, setHTMLgrid] = useState([]);
+  const [score, setScore] = useState(0);
 
   const testCollision = (newTetri) => {
     let result = newTetri.tetri.find(value => {
@@ -32,12 +33,15 @@ const Tetris = () => {
 
   const removeCompletLine = () => {
     let newGrid = [...backGrid];
+    let scoreAdd = 0;
     backGrid.map((row, i) => {
       if (!row.find(value => value === 'white')) {
+        scoreAdd += 100;
         newGrid.splice(i, 1);
         newGrid.splice(0, 0, new Array(WIDTH).fill('white'));
       }
     });
+    setScore(score + ((scoreAdd === 400) ? 800 : scoreAdd));
     setBackGrid(newGrid);
   };
 
@@ -122,6 +126,7 @@ const Tetris = () => {
   return (
     <div>
       <button className='btn btn-danger m-3' onClick={() => fillTetri(tetri)}>Fill</button>
+      <label>{score}</label>
       <table>
         <tbody>
           {HTMLgrid}
