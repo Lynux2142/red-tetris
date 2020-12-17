@@ -3,7 +3,7 @@ import { useHistory } from 'react-router-dom';
 import SocketContext from '../../containers/context.js';
 import Tetris from './Tetris/Tetris.js';
 import useSound from 'use-sound';
-import TetrisSound from '../../../../tetris.mp3';
+import TetrisSound from '../../audio/tetris.mp3';
 
 const Game = () => {
   const socket = useContext(SocketContext);
