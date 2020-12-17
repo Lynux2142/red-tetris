@@ -91,7 +91,7 @@ eval("/**\n * An abstraction for slicing an arraybuffer even when\n * ArrayBuffe
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => __WEBPACK_DEFAULT_EXPORT__\n/* harmony export */ });\nconst params = {\n  server: {\n    host: 'red-tetris-malg.herokuapp.com',\n    port: '',\n\n    get url() {\n      return 'http://' + this.host + (this.port ? ':' + this.port : '/');\n    }\n\n  }\n};\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (params);\n\n//# sourceURL=webpack://red-tetris/./params.js?");
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => __WEBPACK_DEFAULT_EXPORT__\n/* harmony export */ });\nconst params = {\n  server: {\n    host: 'localhost',\n    port: '3004',\n\n    get url() {\n      return 'http://' + this.host + ':' + this.port;\n    }\n\n  }\n};\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (params);\n\n//# sourceURL=webpack://red-tetris/./params.js?");
 
 /***/ }),
 
@@ -278,7 +278,7 @@ eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpac
 /***/ ((__unused_webpack___webpack_module__, __webpack_exports__, __webpack_require__) => {
 
 "use strict";
-eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => __WEBPACK_DEFAULT_EXPORT__\n/* harmony export */ });\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ \"./node_modules/react/index.js\");\n/* harmony import */ var socket_io_client__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! socket.io-client */ \"./node_modules/socket.io-client/lib/index.js\");\n/* harmony import */ var _params_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../params.js */ \"./params.js\");\n\n\n\nconst socket = socket_io_client__WEBPACK_IMPORTED_MODULE_1__(_params_js__WEBPACK_IMPORTED_MODULE_2__.default.server.url);\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (socket);\n\n//# sourceURL=webpack://red-tetris/./src/client/containers/socket.js?");
+eval("__webpack_require__.r(__webpack_exports__);\n/* harmony export */ __webpack_require__.d(__webpack_exports__, {\n/* harmony export */   \"default\": () => __WEBPACK_DEFAULT_EXPORT__\n/* harmony export */ });\n/* harmony import */ var react__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(/*! react */ \"./node_modules/react/index.js\");\n/* harmony import */ var socket_io_client__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(/*! socket.io-client */ \"./node_modules/socket.io-client/lib/index.js\");\n/* harmony import */ var _params_js__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(/*! ../../../params.js */ \"./params.js\");\n\n\n\nconst herokuAddress = 'https://red-tetris-malg.herokuapp.com/';\nconst socket = socket_io_client__WEBPACK_IMPORTED_MODULE_1__(herokuAddress);\n/* harmony default export */ const __WEBPACK_DEFAULT_EXPORT__ = (socket);\n\n//# sourceURL=webpack://red-tetris/./src/client/containers/socket.js?");
 
 /***/ }),
 
