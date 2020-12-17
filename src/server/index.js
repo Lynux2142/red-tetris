@@ -54,7 +54,7 @@ const initApp = (app, params, cb) => {
     });
   };
   app.on('request', handler);
-  app.listen({ port, host }, () => {
+  app.listen(process.env.PORT || port, host, () => {
     loginfo(`tetri listen on ${params.url}`);
     cb();
   });

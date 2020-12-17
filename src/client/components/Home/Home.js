@@ -13,7 +13,6 @@ const Home = () => {
     <div className='container'>
       <h1>Bienvenue sur Red Tetris</h1>
       <button className='btn btn-danger' onClick={play}>Play</button>
-      <Tetris />
     </div>
   );
 };
