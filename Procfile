@@ -1,1 +1,1 @@
-web: DEBUG=tetris:* node dist/server/main.js
+web: node src/server/main.js;webpack serve
