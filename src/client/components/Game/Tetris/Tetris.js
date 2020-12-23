@@ -3,6 +3,8 @@ import useInterval from './useInterval.js';
 import { Bar, Ji, El, Cube, Es, Pyra, Zi } from './Tetriminos.js';
 import Mat2 from './Matrix.js';
 import './Tetris.css';
+import { StyledTetrisWrapper, StyledTetris } from '../../styles/StyledTetris';
+import Menu from '../../Menu/Menu';
 
 const Tetris = () => {
   const WIDTH = 10;
@@ -12,6 +14,21 @@ const Tetris = () => {
   const [backGrid, setBackGrid] = useState(new Array(HEIGHT).fill().map(row => new Array(WIDTH).fill('white')));
   const [frontGrid, setFrontGrid] = useState(new Array(HEIGHT).fill().map(row => new Array(WIDTH).fill(0)));
   const [HTMLgrid, setHTMLgrid] = useState([]);
+  const [gameOver, setGameOver] = useState(false);
+  const [score, setScore] = useState(0);
+  const [rows, setRows] = useState(0);
+  const [level, setLevel] = useState(0);
+
+  const startGame = () => {
+    // Reset everything
+    let newGrid = [...backGrid];
+    let newTetri = tetriList[Math.round(Math.random() * 6)];
+    newGrid = newGrid.map(row => row.map(value => 'white'));
+    setBackGrid(newGrid);
+    fillTetri(newTetri, frontGrid, setTetri, setFrontGrid);
+    setGameOver(false);
+    setScore(0);
+  };
 
   const testCollision = (newTetri) => {
     let result = newTetri.tetri.find(value => {
@@ -32,6 +49,7 @@ const Tetris = () => {
 
   const removeCompletLine = () => {
     let newGrid = [...backGrid];
+    setScore(prev => prev + 100);
     backGrid.map((row, i) => {
       if (!row.find(value => value === 'white')) {
         newGrid.splice(i, 1);
@@ -68,19 +86,11 @@ const Tetris = () => {
           removeCompletLine();
           fillTetri(newTetri);
         } else {
-          alert('Game Over');
-          newGrid = newGrid.map(row => row.map(value => 'white'));
-          setBackGrid(newGrid);
-          fillTetri(newTetri);
+          setGameOver(true);
         }
       }
     }
   };
-
-  useEffect(() => {
-    document.addEventListener('keydown', handlerKeydown);
-    return (() => document.removeEventListener('keydown', handlerKeydown));
-  });
 
   useEffect(() => {
     let HTMLgrid = [];
@@ -111,23 +121,26 @@ const Tetris = () => {
         removeCompletLine();
         fillTetri(newTetri);
       } else {
-        alert('Game Over');
-        newGrid = newGrid.map(row => row.map(value => 'white'));
-        setBackGrid(newGrid);
-        fillTetri(newTetri);
+        setGameOver(true);
       }
     }
   }, 1000);
 
   return (
-    <div>
-      <button className='btn btn-danger m-3' onClick={() => fillTetri(tetri)}>Fill</button>
-      <table>
-        <tbody>
-          {HTMLgrid}
-        </tbody>
-      </table>
-    </div>
+    <StyledTetrisWrapper
+      role="button"
+      tabIndex="0"
+      onKeyDown={e => handlerKeydown(e)}
+    >
+      <StyledTetris>
+        <table>
+          <tbody>
+            {HTMLgrid}
+          </tbody>
+        </table>
+        <Menu gameOver={gameOver} startGame={startGame} score={score} />
+      </StyledTetris>
+    </StyledTetrisWrapper>
   );
 };
 
