@@ -36,7 +36,7 @@ const nameAlreadyExist = (data, value) => {
 const initApp = (server, app, params, cb) => {
   const { host, port } = params;
   app.use(express.static(path.join(__dirname, '../../build')));
-  app.get('/', (req, res) => {
+  app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, '../../build', 'index.html'));
   });
   server.listen(process.env.PORT || port, () => {
