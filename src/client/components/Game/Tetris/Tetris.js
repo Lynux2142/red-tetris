@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import useInterval from './useInterval.js';
-import Tetriminos, { Bar, Ji, El, Cube, Es, Pyra, Zi } from './Tetriminos.js';
+import { Bar, Ji, El, Cube, Es, Pyra, Zi } from './Tetriminos.js';
 import Mat2 from './Matrix.js';
 import './Tetris.css';
 

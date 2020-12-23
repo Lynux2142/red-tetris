@@ -1,1 +1,1 @@
-web: DEBUG=tetris:* node dist/server/main.js
+web: DEBUG=tetris:* node src/server/main.js

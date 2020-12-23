@@ -10,7 +10,9 @@ const JoinRoom = () => {
   const regex = /#([a-zA-Z]+)/;
 
   useEffect(() => {
+    // eslint-disable-next-line no-restricted-globals
     setRoom(regex.exec(location.hash)[1]);
+    // eslint-disable-next-line no-restricted-globals
   }, [location.hash]);
 
   const handleChange = (e) => {
