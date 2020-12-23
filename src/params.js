@@ -6,4 +6,4 @@ const params = {
   },
 };
 
-export default params;
+module.exports = params;

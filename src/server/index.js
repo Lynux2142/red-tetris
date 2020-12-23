@@ -1,16 +1,10 @@
-import { createRequire } from 'module';
-import { fileURLToPath } from 'url';
-import { dirname } from 'path';
-import fs from 'fs';
-import debug from 'debug';
-import params  from '../../params.js';
-import Player from './player.js';
-import Room from './room.js';
-
-const require = createRequire(import.meta.url);
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
+const http = require('http');
+const express = require('express');
+const path = require('path');
+const debug = require('debug');
+const params = require('../params.js');
+const Player = require('./player.js');
+const Room = require('./room.js');
 const logerror = debug('tetris:ERROR');
 const loginfo = debug('tetris:Info');
 
@@ -39,23 +33,14 @@ const nameAlreadyExist = (data, value) => {
   );
 };
 
-const initApp = (app, params, cb) => {
+const initApp = (server, app, params, cb) => {
   const { host, port } = params;
-  const handler = (req, res) => {
-    const file = req.url === '/bundle.js' ? '/../../build/bundle.js' : '/../../index.html';
-    fs.readFile(__dirname + file, (err, data) => {
-      if (err) {
-        logerror(err);
-        res.writeHead(500);
-        return (res.end('Error loading index.html'));
-      }
-      res.writeHead(200, {"Content-Type": (file.search('index') !== -1) ? "text/html" : "text/javascript"});
-      res.end(data);
-    });
-  };
-  app.on('request', handler);
-  app.listen(process.env.PORT || port, host, () => {
-    loginfo(`tetri listen on ${params.url}`);
+  app.use(express.static(path.join(__dirname, '../../build')));
+  app.get('/', (req, res) => {
+    res.sendFile(path.join(__dirname, '../../build', 'index.html'));
+  });
+  server.listen(process.env.PORT || port, () => {
+    console.log(`tetris listen on ${params.url}`);
     cb();
   });
 };
@@ -117,22 +102,11 @@ const initEngine = (io) => {
   });
 };
 
-export function create(params) {
-  const promise = new Promise((resolve, reject) => {
-    const app = require('http').createServer(require('express'));
-    initApp(app, params, () => {
-      const io = require('socket.io')(app, { cookie: false });
-      const stop = (cb) => {
-        io.close();
-        app.close(() => {
-          app.unref();
-        });
-        loginfo('Engine stopped.');
-        cb();
-      };
-      initEngine(io);
-      resolve({ stop });
-    });
+module.exports = function create(params) {
+  const app = express();
+  const server = http.createServer(app);
+  initApp(server, app, params, () => {
+    const io = require('socket.io')(server, { cookie: false });
+    initEngine(io);
   });
-  return (promise);
-}
+};
