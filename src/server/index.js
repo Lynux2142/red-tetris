@@ -2,7 +2,6 @@ const http = require('http');
 const express = require('express');
 const path = require('path');
 const debug = require('debug');
-const params = require('../params.js');
 const Player = require('./player.js');
 const Room = require('./room.js');
 const logerror = debug('tetris:ERROR');
@@ -40,7 +39,7 @@ const initApp = (server, app, params, cb) => {
     res.sendFile(path.join(__dirname, '../../build', 'index.html'));
   });
   server.listen(process.env.PORT || port, () => {
-    console.log(`tetris listen on ${params.url}`);
+    loginfo(`tetris listen on ${params.url}`);
     cb();
   });
 };

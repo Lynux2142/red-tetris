@@ -1,8 +1,8 @@
 import io from 'socket.io-client';
-import params from '../../params';
+import params from '../../../params.js';
 
-const herokuAddress = 'https://red-tetris-malg.herokuapp.com/';
+const herokuServer = 'https://red-tetris-malg.herokuapp.com/';
 
-const socket = io(herokuAddress);
+const socket = io((process.env.NODE_ENV === 'production') ? herokuServer : params.server.url);
 
 export default socket;
