@@ -15,6 +15,7 @@ const Game = () => {
   const [play, { stop }] = useSound(TetrisSound, { volume });
 
   useEffect(() => {
+    // eslint-disable-next-line no-restricted-globals
     const urlParams = regex.exec(location.hash);
 
     if (!urlParams) {
@@ -35,7 +36,7 @@ const Game = () => {
     socket.on('updatePlayers', (players) => {
       setPlayers(players);
     });
-  }, [players]);
+  }, [players, socket]);
 
   useEffect(() => {
     play();

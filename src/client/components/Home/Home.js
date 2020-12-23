@@ -1,6 +1,5 @@
 import React from 'react';
 import { useHistory } from 'react-router-dom';
-import Tetris from '../Game/Tetris/Tetris.js';
 
 const Home = () => {
   const history = useHistory();

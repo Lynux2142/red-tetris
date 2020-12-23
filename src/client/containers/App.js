@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { BrowserRouter as Routes, Route } from 'react-router-dom';
 import socket from './socket.js';
 import SocketContext from './context.js';
