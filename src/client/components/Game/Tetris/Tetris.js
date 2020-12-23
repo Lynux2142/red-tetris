@@ -16,8 +16,6 @@ const Tetris = () => {
   const [HTMLgrid, setHTMLgrid] = useState([]);
   const [gameOver, setGameOver] = useState(false);
   const [score, setScore] = useState(0);
-  const [rows, setRows] = useState(0);
-  const [level, setLevel] = useState(0);
 
   const startGame = () => {
     // Reset everything
