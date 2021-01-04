@@ -12,7 +12,7 @@ const Game = () => {
   const history = useHistory();
   const regex = /#([a-zA-Z]+)\[([a-zA-Z]+)\]/;
   const [volume, setVolume] = useState(0.1);
-  const [mute, setMute] = useState(false);
+  const [mute, setMute] = useState(true);
   const [play, { stop }] = useSound(TetrisSound, { volume: mute ? 0 : volume });
 
   useEffect(() => {

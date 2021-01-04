@@ -4,6 +4,9 @@ const path = require('path');
 const debug = require('debug');
 const Player = require('./player.js');
 const Room = require('./room.js');
+const Tetriminos = require('./tetriminos.js');
+const start = { x: 3, y: 0 };
+const tetriList = [new Tetriminos.I(start), new Tetriminos.J(start), new Tetriminos.L(start), new Tetriminos.O(start), new Tetriminos.S(start), new Tetriminos.T(start), new Tetriminos.Z(start)];
 const logerror = debug('tetris:ERROR');
 const loginfo = debug('tetris:Info');
 
@@ -80,6 +83,10 @@ const initEngine = (io) => {
         socket.to(roomName).broadcast.emit('updatePlayers', rooms[roomName].players);
       }
       callback(unameExist);
+    });
+
+    socket.on('getTetris', callback => {
+      callback(tetriList[Math.round(Math.random() * 6)]);
     });
 
     socket.on('leaveRoom', () => {
