@@ -10,7 +10,6 @@ const Tetris = () => {
   const socket = useContext(SocketContext);
   const WIDTH = 10;
   const HEIGHT = 20;
-  const [start, setStart] = useState(false);
   const [tetri, setTetri] = useState({});
   const [backGrid, setBackGrid] = useState(
     new Array(HEIGHT).fill().map((row) => new Array(WIDTH).fill("white"))

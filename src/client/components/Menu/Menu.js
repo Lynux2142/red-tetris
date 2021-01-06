@@ -15,7 +15,7 @@ const Menu = (props) => {
           <MenuButton text={`Score: ${props.score}`} />
         </div>
       )}
-      <StartButton callback={props.startGame} />
+      <StartButton callback={props.startGame} className="btn btn-success"/>
       <LeaveButton />
     </aside>
   );
