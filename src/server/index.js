@@ -2,9 +2,11 @@ const http = require('http');
 const express = require('express');
 const path = require('path');
 const debug = require('debug');
-const params = require('../params.js');
 const Player = require('./player.js');
 const Room = require('./room.js');
+const Tetriminos = require('./tetriminos.js');
+const start = { x: 3, y: 0 };
+const tetriList = [new Tetriminos.I(start), new Tetriminos.J(start), new Tetriminos.L(start), new Tetriminos.O(start), new Tetriminos.S(start), new Tetriminos.T(start), new Tetriminos.Z(start)];
 const logerror = debug('tetris:ERROR');
 const loginfo = debug('tetris:Info');
 
@@ -36,11 +38,11 @@ const nameAlreadyExist = (data, value) => {
 const initApp = (server, app, params, cb) => {
   const { host, port } = params;
   app.use(express.static(path.join(__dirname, '../../build')));
-  app.get('/', (req, res) => {
+  app.get('*', (req, res) => {
     res.sendFile(path.join(__dirname, '../../build', 'index.html'));
   });
   server.listen(process.env.PORT || port, () => {
-    console.log(`tetris listen on ${params.url}`);
+    loginfo(`tetris listen on ${params.url}`);
     cb();
   });
 };
@@ -81,6 +83,10 @@ const initEngine = (io) => {
         socket.to(roomName).broadcast.emit('updatePlayers', rooms[roomName].players);
       }
       callback(unameExist);
+    });
+
+    socket.on('getTetris', callback => {
+      callback(tetriList[Math.round(Math.random() * 6)]);
     });
 
     socket.on('leaveRoom', () => {

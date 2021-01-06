@@ -12,10 +12,10 @@ const Game = () => {
   const history = useHistory();
   const regex = /#([a-zA-Z]+)\[([a-zA-Z]+)\]/;
   const [volume, setVolume] = useState(0.1);
-  const [play, { stop }] = useSound(TetrisSound, { volume });
+  const [mute, setMute] = useState(true);
+  const [play, { stop }] = useSound(TetrisSound, { volume: mute ? 0 : volume });
 
   useEffect(() => {
-    // eslint-disable-next-line no-restricted-globals
     const urlParams = regex.exec(location.hash);
 
     if (!urlParams) {
@@ -51,7 +51,7 @@ const Game = () => {
   };
 
   const muteMusic = () => {
-    setVolume((volume === 0) ? 0.1 : 0);
+    setMute(!mute);
   };
 
   const decrease = () => {

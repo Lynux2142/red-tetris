@@ -1,16 +1,17 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
+import SocketContext from '../../../containers/context.js';
 import useInterval from './useInterval.js';
-import { Bar, Ji, El, Cube, Es, Pyra, Zi } from './Tetriminos.js';
-import Mat2 from './Matrix.js';
+import movment from './movments.js';
 import './Tetris.css';
 import { StyledTetrisWrapper, StyledTetris } from '../../styles/StyledTetris';
 import Menu from '../../Menu/Menu';
 
 const Tetris = () => {
+  const socket = useContext(SocketContext);
   const WIDTH = 10;
   const HEIGHT = 20;
-  const tetriList = [new Bar(new Mat2(3, -1)), new Ji(new Mat2(3, 0)), new El(new Mat2(3, 0)), new Cube(new Mat2(3, 0)), new Es(new Mat2(3, 0)), new Pyra(new Mat2(3, 0)), new Zi(new Mat2(3, 0))];
-  const [tetri, setTetri] = useState(tetriList[Math.round(Math.random() * 6)]);
+  const [start, setStart] = useState(false);
+  const [tetri, setTetri] = useState({});
   const [backGrid, setBackGrid] = useState(new Array(HEIGHT).fill().map(row => new Array(WIDTH).fill('white')));
   const [frontGrid, setFrontGrid] = useState(new Array(HEIGHT).fill().map(row => new Array(WIDTH).fill(0)));
   const [HTMLgrid, setHTMLgrid] = useState([]);
@@ -29,8 +30,8 @@ const Tetris = () => {
   };
 
   const testCollision = (newTetri) => {
-    let result = newTetri.tetri.find(value => {
-      const realPos = new Mat2(newTetri.position.x + value.x, newTetri.position.y + value.y);
+    let result = newTetri.points.find(value => {
+      const realPos = { x: newTetri.position.x + value.x, y: newTetri.position.y + value.y };
       return (realPos.x < 0 || realPos.x >= WIDTH || realPos.y < 0 || realPos.y >= HEIGHT || backGrid[realPos.y][realPos.x] !== 'white');
     });
     return (result ? true : false);
@@ -39,7 +40,7 @@ const Tetris = () => {
   const fillTetri = (newTetri) => {
     let newGrid = frontGrid.map(row => row.map(value => 0));
     setTetri(newTetri);
-    newTetri.tetri.map(value => {
+    newTetri.points.map(value => {
       newGrid[newTetri.position.y + value.y][newTetri.position.x + value.x] = 1;
     });
     setFrontGrid([...newGrid]);
@@ -57,35 +58,53 @@ const Tetris = () => {
     setBackGrid(newGrid);
   };
 
+  const collision = () => {
+    let newGrid = [...backGrid];
+    socket.emit('getTetris', newTetri => {
+      tetri.points.map(value => {
+        newGrid[tetri.position.y + value.y][tetri.position.x + value.x] = tetri.color;
+      });
+      setBackGrid([...newGrid]);
+      if (!testCollision(newTetri)) {
+        removeCompletLine();
+        fillTetri(newTetri);
+      } else {
+        alert('Game Over');
+        setStart(false);
+      }
+    });
+  };
+
   const handlerKeydown = (e) => {
     if (e.keyCode === 37) {
-      if (!testCollision(tetri.moveLeft())) {
-        fillTetri(tetri.moveLeft());
+      if (!testCollision(movment.Left(tetri))) {
+        fillTetri(movment.Left(tetri));
       }
     } else if (e.keyCode === 39) {
-      if (!testCollision(tetri.moveRight())) {
-        fillTetri(tetri.moveRight());
+      if (!testCollision(movment.Right(tetri))) {
+        fillTetri(movment.Right(tetri));
       }
     } else if (e.keyCode === 38) {
-      if (!testCollision(tetri.rotate())) {
-        fillTetri(tetri.rotate());
+      if (!testCollision(movment.rotate(tetri))) {
+        fillTetri(movment.rotate(tetri));
       }
     } else if (e.keyCode === 40) {
-      if (!testCollision(tetri.moveDown())) {
-        fillTetri(tetri.moveDown());
+      if (!testCollision(movment.Down(tetri))) {
+        fillTetri(movment.Down(tetri));
       } else {
-        let newGrid = [...backGrid];
-        let newTetri = tetriList[Math.round(Math.random() * 6)];
-        tetri.tetri.map(value => {
-          newGrid[tetri.position.y + value.y][tetri.position.x + value.x] = tetri.color;
-        });
-        setBackGrid([...newGrid]);
-        if (!testCollision(newTetri)) {
-          removeCompletLine();
-          fillTetri(newTetri);
-        } else {
-          setGameOver(true);
-        }
+        // let newGrid = [...backGrid];
+        // let newTetri = tetriList[Math.round(Math.random() * 6)];
+        // tetri.tetri.map(value => {
+        //   newGrid[tetri.position.y + value.y][tetri.position.x + value.x] = tetri.color;
+        // });
+        // setBackGrid([...newGrid]);
+        // if (!testCollision(newTetri)) {
+        //   removeCompletLine();
+        //   fillTetri(newTetri);
+        // } else {
+        //   setGameOver(true);
+        // }
+        collision();
       }
     }
   };
@@ -106,40 +125,51 @@ const Tetris = () => {
   }, [frontGrid]);
 
   useInterval(() => {
-    if (!testCollision(tetri.moveDown())) {
-      fillTetri(tetri.moveDown());
-    } else {
-      let newGrid = [...backGrid];
-      let newTetri = tetriList[Math.round(Math.random() * 6)];
-      tetri.tetri.map(value => {
-        newGrid[tetri.position.y + value.y][tetri.position.x + value.x] = tetri.color;
-      });
-      setBackGrid([...newGrid]);
-      if (!testCollision(newTetri)) {
-        removeCompletLine();
-        fillTetri(newTetri);
+    if (start) {
+      if (!testCollision(movment.Down(tetri))) {
+        fillTetri(movment.Down(tetri));
       } else {
-        setGameOver(true);
+        // setGameOver(true);
+        collision();
       }
     }
   }, 1000);
 
+  const play = () => {
+    let newGrid = [...backGrid];
+    newGrid = newGrid.map(row => row.map(value => 'white'));
+    setBackGrid(newGrid);
+    socket.emit('getTetris', tetriminos => {
+      setTetri(tetriminos);
+    });
+    setStart(!start);
+  };
+
   return (
-    <StyledTetrisWrapper
-      role="button"
-      tabIndex="0"
-      onKeyDown={e => handlerKeydown(e)}
-    >
-      <StyledTetris>
-        <table>
-          <tbody>
-            {HTMLgrid}
-          </tbody>
-        </table>
-        <Menu gameOver={gameOver} startGame={startGame} score={score} />
-      </StyledTetris>
-    </StyledTetrisWrapper>
+
+    <div>
+      <button className='btn btn-danger m-2' onClick={play}>Play</button>
+      <table>
+        <tbody>
+          {HTMLgrid}
+        </tbody>
+      </table>
+    </div>
   );
 };
+/* <StyledTetrisWrapper
+role="button"
+tabIndex="0"
+onKeyDown={e => handlerKeydown(e)}
+>
+<StyledTetris>
+  <table>
+    <tbody>
+      {HTMLgrid}
+    </tbody>
+  </table>
+  <Menu gameOver={gameOver} startGame={startGame} score={score} />
+</StyledTetris>
+</StyledTetrisWrapper> */
 
 export default Tetris;
