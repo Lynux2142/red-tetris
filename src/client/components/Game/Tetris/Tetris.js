@@ -75,6 +75,7 @@ const Tetris = () => {
         fillTetri(newTetri);
       } else {
         setGameOver(true);
+        setStart(false);
       }
     });
   };
@@ -122,7 +123,7 @@ const Tetris = () => {
   }, [frontGrid]);
 
   useInterval(() => {
-    if (!gameOver) {
+    if (!gameOver && start) {
       if (!testCollision(movment.Down(tetri))) {
         fillTetri(movment.Down(tetri));
       } else {
@@ -133,6 +134,7 @@ const Tetris = () => {
 
   const startGame = () => {
     // Reset everything
+    setStart(true);
     let newGrid = [...backGrid];
     newGrid = newGrid.map((row) => row.map((value) => "white"));
     setBackGrid(newGrid);
