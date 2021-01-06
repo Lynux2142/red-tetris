@@ -50,8 +50,6 @@ const Tetris = () => {
     setFrontGrid([...newGrid]);
   };
 
-  
-
   const removeCompletLine = () => {
     let newGrid = [...backGrid];
     setScore((prev) => prev + 100);
@@ -77,7 +75,6 @@ const Tetris = () => {
         fillTetri(newTetri);
       } else {
         setGameOver(true);
-        setStart(false);
       }
     });
   };
@@ -125,7 +122,7 @@ const Tetris = () => {
   }, [frontGrid]);
 
   useInterval(() => {
-    if (start) {
+    if (!gameOver) {
       if (!testCollision(movment.Down(tetri))) {
         fillTetri(movment.Down(tetri));
       } else {
@@ -141,6 +138,7 @@ const Tetris = () => {
     setBackGrid(newGrid);
     socket.emit("getTetris", (tetriminos) => {
       setTetri(tetriminos);
+      fillTetri(tetriminos);
     });
     setGameOver(false);
     setScore(0);
