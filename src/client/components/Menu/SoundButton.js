@@ -5,7 +5,7 @@ import TetrisSound from "../../audio/tetris.mp3";
 
 const SoundButton = () => {
   const [volume, setVolume] = useState(0.1);
-  const [mute, setMute] = useState(true);
+  const [mute, setMute] = useState(false);
   const [play, { stop }] = useSound(TetrisSound, { volume: mute ? 0 : volume });
 
   const muteMusic = () => {
