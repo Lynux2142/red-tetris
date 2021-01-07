@@ -100,7 +100,8 @@
     ]
   },
   "devDependencies": {
-    "debug": "^2.6.9"
+    "debug": "^2.6.9",
+    "styled-components": "^5.2.1"
   },
   "jest": {
     "roots": [

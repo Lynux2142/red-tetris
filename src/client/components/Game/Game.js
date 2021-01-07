@@ -2,8 +2,6 @@ import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import SocketContext from '../../containers/context.js';
 import Tetris from './Tetris/Tetris.js';
-import useSound from 'use-sound';
-import TetrisSound from '../../audio/tetris.mp3';
 
 const Game = () => {
   const socket = useContext(SocketContext);
@@ -11,9 +9,6 @@ const Game = () => {
   const [room, setRoom] = useState({});
   const history = useHistory();
   const regex = /#([a-zA-Z]+)\[([a-zA-Z]+)\]/;
-  const [volume, setVolume] = useState(0.1);
-  const [mute, setMute] = useState(false);
-  const [play, { stop }] = useSound(TetrisSound, { volume: mute ? 0 : volume });
 
   useEffect(() => {
     const urlParams = regex.exec(location.hash);
@@ -38,41 +33,13 @@ const Game = () => {
     });
   }, [players, socket]);
 
-  useEffect(() => {
-    play();
-    return(() => {
-      stop();
-    });
-  }, [play]);
-
-  const leave = () => {
-    socket.emit('leaveRoom');
-    history.push('/Room');
-  };
-
-  const muteMusic = () => {
-    setMute(!mute);
-  };
-
-  const decrease = () => {
-    setVolume(volume - 0.01);
-  };
-
-  const increase = () => {
-    setVolume(volume + 0.01);
-  };
-
   return (
     <div className='container'>
       <h1>{room.name}</h1>
       {
         Object.keys(players).map((key, i) => <p key={i}>{players[key].name}</p>)
       }
-      <button className='btn btn-danger' onClick={decrease}>-</button>
-      <button className='btn btn-danger' onClick={muteMusic}>Mute</button>
-      <button className='btn btn-danger' onClick={increase}>+</button>
       <Tetris />
-      <button className='btn btn-danger' onClick={leave}>Leave</button>
     </div>
   );
 };

@@ -3,6 +3,7 @@ class Player {
     this.name = name;
     this.id = id;
     this.room = null;
+    this.spectrum = [20, 20, 20, 20, 20, 20, 20, 20, 20, 20];
   }
 
   joinRoom(roomName) {
