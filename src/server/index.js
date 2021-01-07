@@ -85,8 +85,26 @@ const initEngine = (io) => {
       callback(unameExist);
     });
 
+    socket.on('updateSpectrum', value => {
+      const playerRoom = players[socket.id].room;
+      rooms[playerRoom].players[socket.id].spectrum = [...value];
+      socket.emit('updatePlayers', rooms[playerRoom].players);
+      socket.to(playerRoom).broadcast.emit('updatePlayers', rooms[playerRoom].players);
+    });
+
     socket.on('getTetris', callback => {
-      callback(tetriList[Math.round(Math.random() * 6)]);
+      const newTetris = tetriList[Math.round(Math.random() * 6)];
+      socket.to(players[socket.id].room).broadcast.emit('newTetris', newTetris);
+      callback(newTetris);
+    });
+
+    socket.on('start', () => {
+      let setTetris = [];
+      for (let i = 0 ; i < 4 ; ++i) {
+        setTetris.push(tetriList[Math.floor(Math.random() * 6)]);
+      }
+      socket.emit('getSetTetris', [...setTetris]);
+      socket.to(players[socket.id].room).broadcast.emit('getSetTetris', [...setTetris]);
     });
 
     socket.on('leaveRoom', () => {

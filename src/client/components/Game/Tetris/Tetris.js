@@ -11,6 +11,7 @@ const Tetris = () => {
   const WIDTH = 10;
   const HEIGHT = 20;
   const [start, setStart] = useState(false);
+  const [tetriList, setTetriList] = useState([]);
   const [tetri, setTetri] = useState({});
   const [backGrid, setBackGrid] = useState(
     new Array(HEIGHT).fill().map((row) => new Array(WIDTH).fill("white"))
@@ -21,8 +22,6 @@ const Tetris = () => {
   const [HTMLgrid, setHTMLgrid] = useState([]);
   const [gameOver, setGameOver] = useState(false);
   const [score, setScore] = useState(0);
-
-
 
   const testCollision = (newTetri) => {
     let result = newTetri.points.find((value) => {
@@ -48,36 +47,57 @@ const Tetris = () => {
       newGrid[newTetri.position.y + value.y][newTetri.position.x + value.x] = 1;
     });
     setFrontGrid([...newGrid]);
-  };
+    };
 
   const removeCompletLine = () => {
     let newGrid = [...backGrid];
-    setScore((prev) => prev + 100);
+    let score = 0;
     backGrid.map((row, i) => {
       if (!row.find((value) => value === "white")) {
+        score += 100;
         newGrid.splice(i, 1);
         newGrid.splice(0, 0, new Array(WIDTH).fill("white"));
       }
     });
+    setScore(prev => prev + (score === 400 ? score * 2 : score));
     setBackGrid(newGrid);
+  };
+
+  const getSpectrum = () => {
+    let spectrum = [];
+    for (let x = 0 ; x < WIDTH ; ++x) {
+      let tmp = 0;
+      for (let y = 0 ; y < HEIGHT ; ++y) {
+        if (backGrid[y][x] === 'white') {
+          ++tmp;
+        }
+      }
+      spectrum.push(tmp);
+    }
+    return (spectrum);
   };
 
   const collision = () => {
     let newGrid = [...backGrid];
-    socket.emit("getTetris", (newTetri) => {
-      tetri.points.map((value) => {
-        newGrid[tetri.position.y + value.y][tetri.position.x + value.x] =
-          tetri.color;
-      });
-      setBackGrid([...newGrid]);
-      if (!testCollision(newTetri)) {
-        removeCompletLine();
-        fillTetri(newTetri);
-      } else {
-        setGameOver(true);
-        setStart(false);
-      }
+    tetri.points.map((value) => {
+      newGrid[tetri.position.y + value.y][tetri.position.x + value.x] =
+        tetri.color;
     });
+    socket.emit('updateSpectrum', getSpectrum());
+    setBackGrid([...newGrid]);
+    const newTetri = tetriList.shift();
+    if (tetriList.length < 3) {
+      socket.emit('getTetris', tetriminos => {
+        setTetriList(prev => [...prev, tetriminos]);
+      });
+    }
+    if (!testCollision(newTetri)) {
+      removeCompletLine();
+      fillTetri(newTetri);
+    } else {
+      setGameOver(true);
+      setStart(false);
+    }
   };
 
   const handlerKeydown = (e) => {
@@ -95,6 +115,7 @@ const Tetris = () => {
       }
     } else if (e.keyCode === 40) {
       if (!testCollision(movment.Down(tetri))) {
+        setScore(prev => prev + 1);
         fillTetri(movment.Down(tetri));
       } else {
         collision();
@@ -132,18 +153,30 @@ const Tetris = () => {
     }
   }, 1000);
 
-  const startGame = () => {
-    // Reset everything
-    setStart(true);
-    let newGrid = [...backGrid];
-    newGrid = newGrid.map((row) => row.map((value) => "white"));
-    setBackGrid(newGrid);
-    socket.emit("getTetris", (tetriminos) => {
-      setTetri(tetriminos);
-      fillTetri(tetriminos);
+  useEffect(() => {
+    socket.on('newTetris', tetriminos => {
+      setTetriList(prev => [...prev, tetriminos]);
     });
-    setGameOver(false);
-    setScore(0);
+  }, []);
+
+  useEffect(() => {
+    socket.on('getSetTetris', tetriminos => {
+      // Reset everything
+      const newTetri = tetriminos.shift();
+      let newGrid = [...backGrid];
+      setStart(true);
+      newGrid = newGrid.map((row) => row.map((value) => "white"));
+      setBackGrid(newGrid);
+      setTetriList([...tetriminos]);
+      setTetri(newTetri);
+      fillTetri(newTetri);
+      setGameOver(false);
+      setScore(0);
+    });
+  }, []);
+
+  const startGame = () => {
+    socket.emit('start');
   };
 
   return (
