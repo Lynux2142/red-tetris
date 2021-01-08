@@ -1,10 +1,12 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import Tetris from './Tetris/Tetris.js';
-import SocketContext from "../../containers/context.js";
-import useInterval from "./Tetris/useInterval.js";
-import movment from "./Tetris/movments.js";
+import Tetris from './Tetris/Tetris';
+import SocketContext from "../../containers/context";
+import useInterval from "./Tetris/useInterval";
+import movment from "./Tetris/movments";
 import Menu from "../Menu/Menu";
+import PlayersData from "../PlayersData/PlayersData";
+import { StyledGame } from "../styles/StyledGame";
 
 const Game = () => {
   const WIDTH = 10;
@@ -52,7 +54,7 @@ const Game = () => {
       newGrid[newTetri.position.y + value.y][newTetri.position.x + value.x] = 1;
     });
     setFrontGrid([...newGrid]);
-    };
+  };
 
   const removeCompletLine = () => {
     let newGrid = [...backGrid];
@@ -71,9 +73,9 @@ const Game = () => {
 
   const getSpectrum = () => {
     let spectrum = [];
-    for (let x = 0 ; x < WIDTH ; ++x) {
+    for (let x = 0; x < WIDTH; ++x) {
       let tmp = 0;
-      for (let y = 0 ; y < HEIGHT ; ++y) {
+      for (let y = 0; y < HEIGHT; ++y) {
         if (backGrid[y][x] === 'white') {
           ++tmp;
         }
@@ -136,7 +138,7 @@ const Game = () => {
       let row = [];
       for (let x = 0; x < WIDTH; ++x) {
         row.push(
-          <td
+          <td className='cell'
             style={{
               backgroundColor: frontGrid[y][x] ? tetri.color : backGrid[y][x],
             }}
@@ -221,13 +223,14 @@ const Game = () => {
   return (
     <div className='container'>
       <h1>{room.name}</h1>
-      {
-        Object.keys(players).map((key, i) => <p key={i}>{players[key].name}</p>)
-      }
-      <Tetris 
-        HTMLgrid={HTMLgrid}
-        handlerKeydown={handlerKeydown} />
-      <Menu gameOver={gameOver} startGame={startGame} score={score} />
+      <StyledGame>
+
+        <Tetris
+          HTMLgrid={HTMLgrid}
+          handlerKeydown={handlerKeydown} />
+        <Menu gameOver={gameOver} startGame={startGame} score={score} />
+        <PlayersData players={players} />
+      </StyledGame>
     </div>
   );
 };

@@ -1,5 +1,4 @@
 import React, { useEffect, useState, useContext } from "react";
-import "./Tetris.css";
 import { StyledTetrisWrapper, StyledTetris } from "../../styles/StyledTetris";
 
 const Tetris = (props) => {
