@@ -12,7 +12,7 @@ const loginfo = debug('tetris:Info');
 
 let players = {};
 let rooms = {};
-let playertest = new Player('playertest', 1234);
+let playertest = new Player('playertest', '1234');
 rooms['roomtest'] = new Room('roomtest', playertest);
 
 const leaveRoom = (socket) => {
@@ -89,6 +89,17 @@ const initEngine = (io) => {
       const playerRoom = players[socket.id].room;
       rooms[playerRoom].players[socket.id].spectrum = [...value];
       socket.emit('updatePlayers', rooms[playerRoom].players);
+      socket.to(playerRoom).broadcast.emit('updatePlayers', rooms[playerRoom].players);
+    });
+
+    socket.on('sendBlackbar', () => {
+      const playerRoom = players[socket.id].room;
+      Object.keys(rooms[playerRoom].players).map(key => {
+        if (rooms[playerRoom].players[key].id === socket.id) {
+          rooms[playerRoom].players[key].spectrum.map(value => value - 1);
+        }
+      });
+      socket.to(playerRoom).broadcast.emit('getBlackbar');
       socket.to(playerRoom).broadcast.emit('updatePlayers', rooms[playerRoom].players);
     });
 

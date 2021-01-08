@@ -53,10 +53,11 @@ const Tetris = () => {
     let newGrid = [...backGrid];
     let score = 0;
     backGrid.map((row, i) => {
-      if (!row.find((value) => value === "white")) {
+      if (!row.find(value => (value === "white" || value === "grey"))) {
         score += 100;
         newGrid.splice(i, 1);
         newGrid.splice(0, 0, new Array(WIDTH).fill("white"));
+        socket.emit('sendBlackbar');
       }
     });
     setScore(prev => prev + (score === 400 ? score * 2 : score));
@@ -152,6 +153,16 @@ const Tetris = () => {
       }
     }
   }, 1000);
+
+  useEffect(() => {
+    socket.on('getBlackbar', () => {
+      setBackGrid(prev => {
+        prev.splice(HEIGHT, 0, new Array(WIDTH).fill("grey"));
+        prev.splice(0, 1);
+        return (prev);
+      });
+    });
+  }, []);
 
   useEffect(() => {
     socket.on('newTetris', tetriminos => {
