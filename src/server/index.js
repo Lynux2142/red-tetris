@@ -81,6 +81,7 @@ const initEngine = (io) => {
         rooms[roomName].addPlayer(players[socket.id]);
         socket.join(roomName);
         socket.to(roomName).broadcast.emit('updatePlayers', rooms[roomName].players);
+        socket.broadcast.emit('updateRooms', rooms);
       }
       callback(unameExist);
     });
@@ -120,6 +121,7 @@ const initEngine = (io) => {
 
     socket.on('leaveRoom', () => {
       leaveRoom(socket);
+      socket.broadcast.emit('updateRooms', rooms);
     });
 
     socket.on('join', (username) => {
