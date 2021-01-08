@@ -121,6 +121,7 @@ const initEngine = (io) => {
 
     socket.on('leaveRoom', () => {
       leaveRoom(socket);
+      socket.emit('updateRooms', rooms);
       socket.broadcast.emit('updateRooms', rooms);
     });
 
