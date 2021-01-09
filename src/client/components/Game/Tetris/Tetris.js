@@ -194,7 +194,14 @@ const Tetris = () => {
     <StyledTetrisWrapper
       role="button"
       tabIndex="0"
-      onKeyDown={(e) => handlerKeydown(e)}
+      onKeyDown={(e) => {
+        window.addEventListener('keydown', (e) => {
+          if ([32, 37, 38, 39, 40].indexOf(e.keyCode) > -1) {
+            e.preventDefault();
+          }
+        }, false);
+        handlerKeydown(e);
+      }}
     >
       <StyledTetris>
         <table>
