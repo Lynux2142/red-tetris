@@ -13,9 +13,9 @@ const Menu = (props) => {
       ) : (
         <div>
           <SoundButton />
-          <MenuButton text={`Score: ${props.score}`} />
         </div>
       )}
+      <MenuButton text={`Score: ${props.score}`} />
       <StartButton callback={props.startGame} />
       <LeaveButton />
     </StyledMenu>

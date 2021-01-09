@@ -223,11 +223,12 @@ const Game = () => {
   return (
     <div className='container'>
       <h1>{room.name}</h1>
-      <StyledGame>
-
+      <StyledGame
+      role="button"
+      tabIndex="0"
+      onKeyDown={(e) => handlerKeydown(e)}>
         <Tetris
-          HTMLgrid={HTMLgrid}
-          handlerKeydown={handlerKeydown} />
+          HTMLgrid={HTMLgrid} />
         <Menu gameOver={gameOver} startGame={startGame} score={score} />
         <PlayersData players={players} />
       </StyledGame>
