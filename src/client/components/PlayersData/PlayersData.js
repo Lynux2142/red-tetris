@@ -11,8 +11,6 @@ const PlayersData = (props) => {
                 result = result.concat(spectrum[key]);
             }
         }
-        console.log('spectrum', spectrum);
-        console.log('result', result);
         return result;
     };
 
