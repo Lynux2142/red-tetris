@@ -9,7 +9,7 @@ const LeaveButton = () => {
 
   const leave = () => {
     socket.emit("leaveRoom");
-    history.push("/Room");
+    history.push("/Rooms");
   };
 
   return (
