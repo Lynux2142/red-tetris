@@ -69,14 +69,15 @@ const Game = () => {
     });
     setScore(prev => prev + (score === 400 ? score * 2 : score));
     setBackGrid(newGrid);
+    return ([...newGrid]);
   };
 
-  const getSpectrum = () => {
+  const getSpectrum = (newGrid) => {
     let spectrum = [];
     for (let x = 0; x < WIDTH; ++x) {
       let tmp = 0;
       for (let y = 0; y < HEIGHT; ++y) {
-        if (backGrid[y][x] === 'white') {
+        if (newGrid[y][x] === 'white') {
           ++tmp;
         }
       }
@@ -91,7 +92,6 @@ const Game = () => {
       newGrid[tetri.position.y + value.y][tetri.position.x + value.x] =
         tetri.color;
     });
-    socket.emit('updateSpectrum', getSpectrum());
     setBackGrid([...newGrid]);
     const newTetri = tetriList.shift();
     if (tetriList.length < 3) {
@@ -100,12 +100,13 @@ const Game = () => {
       });
     }
     if (!testCollision(newTetri)) {
-      removeCompletLine();
+      newGrid = removeCompletLine();
       fillTetri(newTetri);
     } else {
       setGameOver(true);
       setStart(false);
     }
+    socket.emit('updateSpectrum', getSpectrum(newGrid));
   };
 
   const handlerKeydown = (e) => {
@@ -199,9 +200,10 @@ const Game = () => {
     if (!urlParams) {
       history.push('/Home');
     } else {
-      socket.emit('getMyRoom', (error, room) => {
+      socket.emit('joinRoom', urlParams[1], urlParams[2], (error, room) => {
         if (error) {
-          history.push('/Home');
+          history.push(`/Rooms`);
+          alert(error);
         } else {
           setRoom(room);
           setPlayers(room.players);

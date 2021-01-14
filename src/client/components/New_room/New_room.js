@@ -19,14 +19,7 @@ const New_room = () => {
   const create = (e) => {
     e.preventDefault();
     if (name && room) {
-      socket.emit('join', name);
-      socket.emit('addRoom', room, (error) => {
-        if (!error) {
-          history.push(`/#${room}[${name}]`);
-        } else {
-          alert('Room name already exist');
-        }
-      });
+      history.push(`/#${room}[${name}]`);
     }
   };
 

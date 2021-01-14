@@ -5,7 +5,7 @@ const Home = () => {
   const history = useHistory();
 
   const play = () => {
-    history.push('/Room');
+    history.push('/Rooms');
   };
 
   return (
