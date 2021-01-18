@@ -51,39 +51,28 @@ const initEngine = (io) => {
   io.on('connection', (socket) => {
     loginfo('Socket connected: ' + socket.id);
 
-    socket.on('addRoom', (roomName, callback) => {
-      const roomExist = nameAlreadyExist(rooms, roomName);
-
-      if (!roomExist) {
-        rooms[roomName] = new Room(roomName, players[socket.id]);
-        socket.join(roomName);
-        socket.broadcast.emit('updateRooms', rooms);
-      }
-      callback(roomExist);
-    });
-
-    socket.on('getMyRoom', (callback) => {
-      if (players[socket.id] && rooms[players[socket.id].room]) {
-        callback(false, rooms[players[socket.id].room]);
-      } else {
-        callback(true, null);
-      }
-    });
-
     socket.on('getRooms', (callback) => {
       callback(rooms);
     });
 
-    socket.on('joinRoom', (roomName, callback) => {
-      const unameExist = nameAlreadyExist(rooms[roomName].players, players[socket.id].name);
-
-      if (!unameExist) {
-        rooms[roomName].addPlayer(players[socket.id]);
+    socket.on('joinRoom', (roomName, username, callback) => {
+      const roomExist = nameAlreadyExist(rooms, roomName);
+      if (roomExist) {
+        const unameExist = nameAlreadyExist(rooms[roomName].players, username);
+        if (!unameExist) {
+          players[socket.id] = new Player(username, socket.id);
+          rooms[roomName].addPlayer(players[socket.id]);
+          socket.join(roomName);
+          socket.to(roomName).broadcast.emit('updatePlayers', rooms[roomName].players);
+          socket.broadcast.emit('updateRooms', rooms);
+        } else { callback('Username already taken', null); }
+      } else {
+        players[socket.id] = new Player(username, socket.id);
+        rooms[roomName] = new Room(roomName, players[socket.id]);
         socket.join(roomName);
-        socket.to(roomName).broadcast.emit('updatePlayers', rooms[roomName].players);
         socket.broadcast.emit('updateRooms', rooms);
       }
-      callback(unameExist);
+      callback(null, rooms[roomName]);
     });
 
     socket.on('updateSpectrum', value => {
@@ -115,6 +104,9 @@ const initEngine = (io) => {
       for (let i = 0 ; i < 4 ; ++i) {
         setTetris.push(tetriList[Math.floor(Math.random() * 6)]);
       }
+      Object.keys(rooms[players[socket.id].room].players).map(key => rooms[players[socket.id].room].players[key].spectrum = [20, 20, 20, 20, 20, 20, 20, 20, 20, 20]);
+      socket.emit('updatePlayers', rooms[players[socket.id].room].players);
+      socket.to(rooms[players[socket.id].room]).broadcast.emit('updatePlayers', rooms[players[socket.id].room].players);
       socket.emit('getSetTetris', [...setTetris]);
       socket.to(players[socket.id].room).broadcast.emit('getSetTetris', [...setTetris]);
     });
@@ -123,10 +115,6 @@ const initEngine = (io) => {
       leaveRoom(socket);
       socket.emit('updateRooms', rooms);
       socket.broadcast.emit('updateRooms', rooms);
-    });
-
-    socket.on('join', (username) => {
-      players[socket.id] = new Player(username, socket.id);
     });
 
     socket.on('disconnect', () => {
