@@ -14,6 +14,7 @@ const Game = () => {
   const [start, setStart] = useState(false);
   const [tetriList, setTetriList] = useState([]);
   const [tetri, setTetri] = useState({});
+  const [tetriShadow, setTetriShadow] = useState({});
   const [backGrid, setBackGrid] = useState(
     new Array(HEIGHT).fill().map((row) => new Array(WIDTH).fill("white"))
   );
@@ -47,10 +48,23 @@ const Game = () => {
     return result ? true : false;
   };
 
+  const fillTetriShadow = (tetri) => {
+    while (!testCollision(tetri)) {
+      tetri = movment.Down(tetri);
+    }
+    tetri = {...tetri, position: {...tetri.position, y: tetri.position.y - 1}};
+    setTetriShadow(tetri);
+    return (tetri);
+  };
+
   const fillTetri = (newTetri) => {
-    let newGrid = frontGrid.map((row) => row.map((value) => 0));
+    const tetriShadow = fillTetriShadow(newTetri);
+    let newGrid = frontGrid.map(row => row.map((value) => 0));
     setTetri(newTetri);
-    newTetri.points.map((value) => {
+    tetriShadow.points.map(value => {
+      newGrid[tetriShadow.position.y + value.y][tetriShadow.position.x + value.x] = 2;
+    });
+    newTetri.points.map(value => {
       newGrid[newTetri.position.y + value.y][newTetri.position.x + value.x] = 1;
     });
     setFrontGrid([...newGrid]);
@@ -129,6 +143,9 @@ const Game = () => {
       } else {
         collision();
       }
+    } else if (e.keyCode === 32) {
+      fillTetri(tetriShadow);
+      setScore(prev => prev + (tetriShadow.position.y - tetri.position.y));
     }
   };
 
@@ -202,7 +219,7 @@ const Game = () => {
     } else {
       socket.emit('joinRoom', urlParams[1], urlParams[2], (error, room) => {
         if (error) {
-          history.push(`/Rooms`);
+          history.push('/Rooms');
           alert(error);
         } else {
           setRoom(room);
@@ -218,7 +235,7 @@ const Game = () => {
     });
   }, [players, socket]);
 
-  const startGame = () => {
+  const startGame = (e) => {
     socket.emit('start');
   };
 
