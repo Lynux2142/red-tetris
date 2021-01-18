@@ -236,13 +236,14 @@ const Game = () => {
   }, [players, socket]);
 
   const startGame = (e) => {
+    document.getElementById('gameSection').focus();
     socket.emit('start');
   };
 
   return (
     <div className='container'>
       <h1>{room.name}</h1>
-      <StyledGame
+      <StyledGame id="gameSection"
       role="button"
       tabIndex="0"
       onKeyDown={(e) => {
