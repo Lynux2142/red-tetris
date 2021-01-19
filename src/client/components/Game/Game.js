@@ -186,6 +186,10 @@ const Game = () => {
         prev.splice(0, 1);
         return (prev);
       });
+      setTetri(prev => {
+        prev.position.y -= 1;
+        return (prev);
+      });
     });
   }, []);
 
