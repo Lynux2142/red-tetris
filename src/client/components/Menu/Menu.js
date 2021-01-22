@@ -13,9 +13,6 @@ const Menu = (props) => {
     <StyledMenu
       windowWidth={windowWidth}
       windowHeight={windowHeight}>
-      <div>
-        width: {windowWidth} ~ height: {windowHeight}
-      </div>
       {props.gameOver ? (
         <MenuButton gameOver={props.gameOver} text="Game Over" />
       ) : (
