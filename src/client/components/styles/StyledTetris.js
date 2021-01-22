@@ -1,8 +1,8 @@
 import styled from 'styled-components';
 
-export const StyledTetrisWrapper = styled.div`
-  padding: 3.5%;
+export const StyledTetris = styled.div`
   max-width: 50%;
+  margin: 2%;
   .cell {
     border: solid 1px;
     width: 2vw;
@@ -13,10 +13,4 @@ export const StyledTetrisWrapper = styled.div`
     border-top-color: rgba(${props => props.color}, 1);
     border-left-color: rgba(${props => props.color}, 0.3);
   }
-`;
-
-export const StyledTetris = styled.div`
-  display: flex;
-  flex-wrap: wrap;
-  align-items: flex-start;
 `;

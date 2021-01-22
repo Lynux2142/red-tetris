@@ -7,8 +7,11 @@ import movment from "./Tetris/movments";
 import Menu from "../Menu/Menu";
 import PlayersData from "../PlayersData/PlayersData";
 import { StyledGame } from "../styles/StyledGame";
+import { StyledCell, StyledRow } from "../styles/StyledCell";
+import useWindowDimensions from "../../hooks/useWindowDimensions";
 
 const Game = () => {
+  const { windowHeight, windowWidth } = useWindowDimensions();
   const WIDTH = 10;
   const HEIGHT = 20;
   const [start, setStart] = useState(false);
@@ -151,20 +154,17 @@ const Game = () => {
 
   useEffect(() => {
     let HTMLgrid = [];
-
     for (let y = 0; y < HEIGHT; ++y) {
       let row = [];
       for (let x = 0; x < WIDTH; ++x) {
         row.push(
-          <td className='cell'
-            style={{
-              backgroundColor: frontGrid[y][x] ? tetri.color : backGrid[y][x],
-            }}
+          <StyledCell className='cell'
+            color={frontGrid[y][x] ? tetri.color : backGrid[y][x]}
             key={`${y * WIDTH + x}`}
-          ></td>
+          ></StyledCell>
         );
       }
-      HTMLgrid.push(<tr key={`${y}`}>{row}</tr>);
+      HTMLgrid.push(<StyledRow key={`${y}`}>{row}</StyledRow>);
     }
     setHTMLgrid(HTMLgrid);
   }, [frontGrid]);
@@ -248,6 +248,8 @@ const Game = () => {
     <div className='container'>
       <h1>{room.name}</h1>
       <StyledGame id="gameSection"
+      windowWidth={windowWidth}
+      windowHeight={windowHeight}
       role="button"
       tabIndex="0"
       onKeyDown={(e) => {
@@ -258,9 +260,9 @@ const Game = () => {
         }, false);
         handlerKeydown(e);
       }}>
+        <Menu gameOver={gameOver} startGame={startGame} score={score} gameStarted={start}/>
         <Tetris
           HTMLgrid={HTMLgrid} />
-        <Menu gameOver={gameOver} startGame={startGame} score={score} />
         <PlayersData players={players} />
       </StyledGame>
     </div>

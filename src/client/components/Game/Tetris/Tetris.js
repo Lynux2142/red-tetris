@@ -1,15 +1,11 @@
-import React, { useEffect, useState, useContext } from "react";
-import { StyledTetrisWrapper, StyledTetris } from "../../styles/StyledTetris";
+import React from "react";
+import { StyledTetris } from "../../styles/StyledTetris";
 
 const Tetris = (props) => {
   return (
-    <StyledTetrisWrapper>
       <StyledTetris>
-        <table>
-          <tbody>{props.HTMLgrid}</tbody>
-        </table>
+          {props.HTMLgrid}
       </StyledTetris>
-    </StyledTetrisWrapper>
   );
 };
 
