@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyledMenuButton } from '../styles/StyledMenuButton';
+import { StyledMenuButton } from '../styles/StyledMenu';
 
 const MenuButton = ({ gameOver, text }) => (
     <StyledMenuButton gameOver={gameOver}>{text}</StyledMenuButton>

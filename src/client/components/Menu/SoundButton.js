@@ -1,9 +1,9 @@
 import React, { useState, useEffect } from "react";
-import { StyledVolumeButton, StyledSoundWrapper, StyledMuteButton } from "../styles/StyledSoundButton";
+import { StyledVolumeButton, StyledSoundWrapper, StyledMuteButton } from "../styles/StyledMenu";
 import useSound from "use-sound";
 import TetrisSound from "../../audio/tetris.mp3";
 
-const SoundButton = () => {
+const SoundButton = ( props ) => {
   const [volume, setVolume] = useState(0.1);
   const [mute, setMute] = useState(true);
   const [play, { stop }] = useSound(TetrisSound, { volume: mute ? 0 : volume });
@@ -21,7 +21,11 @@ const SoundButton = () => {
   };
 
   useEffect(() => {
-    play();
+    if (props.gameStarted && !props.gameOver) {
+      play();
+    } else {
+      stop();
+    }
     return () => {
       stop();
     };
@@ -29,13 +33,13 @@ const SoundButton = () => {
 
   return (
     <StyledSoundWrapper>
-      <StyledVolumeButton className="btn btn-danger" onClick={decrease}>
+      <StyledVolumeButton onClick={decrease}>
         -
       </StyledVolumeButton>
-      <StyledMuteButton className="btn btn-danger" onClick={muteMusic}>
+      <StyledMuteButton onClick={muteMusic}>
           { mute ? ( "Unmute") : ( "Mute")}
       </StyledMuteButton>
-      <StyledVolumeButton className="btn btn-danger" onClick={increase}>
+      <StyledVolumeButton onClick={increase}>
         +
       </StyledVolumeButton>
     </StyledSoundWrapper>

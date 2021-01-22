@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import SocketContext from '../../containers/context.js';
 import { useHistory } from 'react-router-dom';
-import { StyledLeaveButton } from "../styles/StyledLeaveButton";
+import { StyledLeaveButton } from "../styles/StyledMenu";
 
 const LeaveButton = () => {
   const socket = useContext(SocketContext);
@@ -14,7 +14,7 @@ const LeaveButton = () => {
 
   return (
     <div>
-      <StyledLeaveButton className="btn btn-danger" onClick={leave}>
+      <StyledLeaveButton onClick={leave}>
         Leave Room
       </StyledLeaveButton>
     </div>
