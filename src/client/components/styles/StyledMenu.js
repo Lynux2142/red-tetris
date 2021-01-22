@@ -16,8 +16,8 @@ export const StyledMenuButton = styled.div`
   align-self: center;
   justify-content: center;
   border: 0.3em solid #333;
-  height: 5vh;
-  width: 15vw;
+  min-height: 5vh;
+  min-width: 17vw;
   border-radius: 20em;
   color: ${props => (props.gameOver ? 'red' : '#999')};
   background: #000;
@@ -27,8 +27,8 @@ export const StyledMenuButton = styled.div`
 export const StyledStartButton = styled.button`
   box-sizing: border-box;
   margin: ${props => props.windowWidth > props.windowHeight ? '0 0 0 1vw' : '5vw 0 0 1vw'};
-  height: 5vh;
-  width: 15vw;
+  min-height: 5vh;
+  min-width: 17vw;
   border-radius: 20em;
   border: none;
   color: white;
@@ -44,8 +44,8 @@ export const StyledStartButton = styled.button`
 export const StyledLeaveButton = styled.button`
   box-sizing: border-box;
   margin: ${props => (props.windowWidth > props.windowHeight ? '0 0 0 1vw' : '5vw 0 0 1vw')};
-  height: 5vh;
-  width: 15vw;
+  min-height: 5vh;
+  min-width: 17vw;
   border-radius: 20em;
   border: none;
   color: white;
@@ -66,8 +66,8 @@ export const StyledSoundWrapper = styled.div`
 export const StyledMuteButton = styled.button`
   box-sizing: border-box;
   margin: ${props => (props.windowWidth > props.windowHeight ? '5vh 0 0 0' : '5vw 0 0 0')};
-  height: ${props => (props.windowWidth > props.windowHeight ? '10vh' : '5vh')};
-  width: ${props => (props.windowWidth > props.windowHeight ? '100vw' : '10vw')};
+  min-height: ${props => (props.windowWidth > props.windowHeight ? '10vh' : '5vh')};
+  min-width: ${props => (props.windowWidth > props.windowHeight ? '9vw' : '9vw')};
   border-radius: 15em;
   border: none;
   color: white;
@@ -83,8 +83,8 @@ export const StyledMuteButton = styled.button`
 export const StyledVolumeButton = styled.button`
   box-sizing: border-box;
   margin: ${props => (props.windowWidth > props.windowHeight ? '5vh 0 0 0' : '5vw 0 0 0')};
-  height: ${props => (props.windowWidth > props.windowHeight ? '10vh' : '5vh')};
-  width: ${props => (props.windowWidth > props.windowHeight ? '4vw' : '4vw')};
+  min-height: ${props => (props.windowWidth > props.windowHeight ? '10vh' : '5vh')};
+  min-width: ${props => (props.windowWidth > props.windowHeight ? '4vw' : '4vw')};
   border-radius: 50%;
   border: none;
   color: white;
