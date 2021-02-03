@@ -118,7 +118,6 @@ const Game = () => {
       fillTetri(newTetri);
     } else {
       setGameOver(true);
-      setStart(false);
     }
     socket.emit('updateSpectrum', getSpectrum(newGrid));
   };
@@ -199,21 +198,32 @@ const Game = () => {
     });
   }, []);
 
+  const initGame = (tetriminos, set) => {
+    // Reset everything
+    const newTetri = tetriminos;
+    let newGrid = [...backGrid];
+    setStart(true);
+    newGrid = newGrid.map((row) => row.map((value) => "white"));
+    setBackGrid(newGrid);
+    setTetriList([...set]);
+    setTetri(newTetri);
+    fillTetri(newTetri);
+    setGameOver(false);
+    setScore(0);
+  };
+
   useEffect(() => {
-    socket.on('getSetTetris', tetriminos => {
-      // Reset everything
-      const newTetri = tetriminos.shift();
-      let newGrid = [...backGrid];
-      setStart(true);
-      newGrid = newGrid.map((row) => row.map((value) => "white"));
-      setBackGrid(newGrid);
-      setTetriList([...tetriminos]);
-      setTetri(newTetri);
-      fillTetri(newTetri);
-      setGameOver(false);
-      setScore(0);
+    socket.on('getSetTetris', (tetriminos, set) => {
+      initGame(tetriminos, set);
     });
   }, []);
+
+  const startGame = () => {
+    document.getElementById('gameSection').focus();
+    socket.emit('start', (tetriminos, set) => {
+      initGame(tetriminos, set);
+    });
+  };
 
   useEffect(() => {
     const urlParams = regex.exec(location.hash);
@@ -234,23 +244,24 @@ const Game = () => {
   }, [socket]);
 
   useEffect(() => {
+    history.listen(() => {
+      if (history.action === "POP") {
+        socket.emit('leaveRoom');
+        history.push('/Rooms');
+      }
+    });
+  }, []);
+
+  useEffect(() => {
     socket.on('updatePlayers', (players) => {
       setPlayers(players);
     });
   }, [players, socket]);
 
-  const startGame = (e) => {
-    document.getElementById('gameSection').focus();
-    socket.emit('start');
-  };
-
   return (
     <div className='container'>
       <h1>{room.name}</h1>
-      <StyledGame id="gameSection"
-      role="button"
-      tabIndex="0"
-      onKeyDown={(e) => {
+      <StyledGame id="gameSection" role="button" tabIndex="0" onKeyDown={(e) => {
         window.addEventListener('keydown', (e) => {
           if ([32, 37, 38, 39, 40].indexOf(e.keyCode) > -1) {
             e.preventDefault();

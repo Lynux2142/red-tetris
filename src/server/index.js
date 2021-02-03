@@ -17,13 +17,13 @@ rooms['roomtest'] = new Room('roomtest', playertest);
 
 const leaveRoom = (socket) => {
   const playerRoom = players[socket.id].room;
-
   rooms[playerRoom].removePlayer(players[socket.id]);
+  delete players[socket.id];
   socket.to(playerRoom).broadcast.emit('updatePlayers', rooms[playerRoom].players);
+  socket.leave(playerRoom);
   if (rooms[playerRoom].size === 0) {
     delete rooms[playerRoom];
     socket.broadcast.emit('updateRooms', (rooms));
-    socket.leave(playerRoom);
   }
 };
 
@@ -99,16 +99,18 @@ const initEngine = (io) => {
       callback(newTetris);
     });
 
-    socket.on('start', () => {
+    socket.on('start', (callback) => {
       let setTetris = [];
+      let tetri;
       for (let i = 0 ; i < 4 ; ++i) {
         setTetris.push(tetriList[Math.floor(Math.random() * 6)]);
       }
+      tetri = setTetris.shift();
       Object.keys(rooms[players[socket.id].room].players).map(key => rooms[players[socket.id].room].players[key].spectrum = [20, 20, 20, 20, 20, 20, 20, 20, 20, 20]);
       socket.emit('updatePlayers', rooms[players[socket.id].room].players);
       socket.to(rooms[players[socket.id].room]).broadcast.emit('updatePlayers', rooms[players[socket.id].room].players);
-      socket.emit('getSetTetris', [...setTetris]);
-      socket.to(players[socket.id].room).broadcast.emit('getSetTetris', [...setTetris]);
+      socket.to(players[socket.id].room).broadcast.emit('getSetTetris', tetri, [...setTetris]);
+      callback(tetri, [...setTetris]);
     });
 
     socket.on('leaveRoom', () => {
