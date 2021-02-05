@@ -157,9 +157,9 @@ const Game = () => {
         row.push(
           <td className='cell'
             style={{
-              'backgroundColor': (frontGrid[y][x] === 1) ? tetri.color : backGrid[y][x],
-              'border-width': (frontGrid[y][x] === 2) ? '2px' : '1px',
-              'border-color': (frontGrid[y][x] === 2) ? tetri.color : 'black'
+              backgroundColor: (frontGrid[y][x] === 1) ? tetri.color : backGrid[y][x],
+              borderWidth: (frontGrid[y][x] === 2) ? '2px' : '1px',
+              borderColor: (frontGrid[y][x] === 2) ? tetri.color : 'black'
             }}
             key={`${y * WIDTH + x}`}
           ></td>
@@ -209,7 +209,6 @@ const Game = () => {
     setBackGrid(newGrid);
     setTetriList([...set]);
     setTetri(newTetri);
-    fillTetri(newTetri);
     setGameOver(false);
     setScore(0);
   };
