@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 
 const JoinRoom = ({ roomName }) => {
@@ -15,6 +15,14 @@ const JoinRoom = ({ roomName }) => {
       history.push(`/#${roomName}[${name}]`);
     }
   };
+
+  useEffect(() => {
+    history.listen(() => {
+      if (history.action === "POP") {
+        history.push('/Rooms');
+      }
+    });
+  }, []);
 
   return (
     <div className='container'>
