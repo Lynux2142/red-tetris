@@ -245,19 +245,16 @@ const Game = () => {
   }, [socket]);
 
   useEffect(() => {
-    history.listen(() => {
-      if (history.action === "POP") {
-        socket.emit('leaveRoom');
-        history.push('/Rooms');
-      }
-    });
-  }, []);
-
-  useEffect(() => {
     socket.on('updatePlayers', (players) => {
       setPlayers(players);
     });
   }, [players, socket]);
+
+  useEffect(() => {
+    return (() => {
+      socket.emit('leaveRoom');
+    });
+  }, []);
 
   return (
     <div className='container'>

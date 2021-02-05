@@ -16,14 +16,6 @@ const JoinRoom = ({ roomName }) => {
     }
   };
 
-  useEffect(() => {
-    history.listen(() => {
-      if (history.action === "POP") {
-        history.push('/Rooms');
-      }
-    });
-  }, []);
-
   return (
     <div className='container'>
       <h1>Join "{roomName}"</h1>
