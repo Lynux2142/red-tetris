@@ -16,14 +16,16 @@ let playertest = new Player('playertest', '1234');
 rooms['roomtest'] = new Room('roomtest', playertest);
 
 const leaveRoom = (socket) => {
-  const playerRoom = players[socket.id].room;
-  rooms[playerRoom].removePlayer(players[socket.id]);
-  delete players[socket.id];
-  socket.to(playerRoom).broadcast.emit('updatePlayers', rooms[playerRoom].players);
-  socket.leave(playerRoom);
-  if (rooms[playerRoom].size === 0) {
-    delete rooms[playerRoom];
-    socket.broadcast.emit('updateRooms', (rooms));
+  if (players[socket.id]) {
+    const playerRoom = players[socket.id].room;
+    rooms[playerRoom].removePlayer(players[socket.id]);
+    delete players[socket.id];
+    socket.to(playerRoom).broadcast.emit('updatePlayers', rooms[playerRoom].players);
+    socket.leave(playerRoom);
+    if (rooms[playerRoom].size === 0) {
+      delete rooms[playerRoom];
+      socket.broadcast.emit('updateRooms', (rooms));
+    }
   }
 };
 
