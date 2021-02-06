@@ -16,9 +16,7 @@ const Menu = (props) => {
       {props.gameOver ? (
         <MenuButton gameOver={props.gameOver} text="Game Over" />
       ) : (
-          <div>
             <SoundButton gameOver={props.gameOver} gameStarted={props.gameStarted} />
-          </div>
         )}
       <MenuButton text={`Score: ${props.score}`} />
       <StartButton callback={props.startGame} />

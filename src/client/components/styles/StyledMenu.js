@@ -18,6 +18,7 @@ export const StyledMenuButton = styled.div`
   border: 0.3em solid #333;
   min-height: 5vh;
   min-width: 17vw;
+  max-width: 17vw;
   border-radius: 20em;
   color: ${props => (props.gameOver ? 'red' : '#999')};
   background: #000;
@@ -25,6 +26,9 @@ export const StyledMenuButton = styled.div`
 `;
 
 export const StyledStartButton = styled.button`
+  display: flex;
+  align-self: center;
+  justify-content: center;
   box-sizing: border-box;
   margin: ${props => props.windowWidth > props.windowHeight ? '0 0 0 1vw' : '5vw 0 0 1vw'};
   min-height: 5vh;
@@ -42,6 +46,9 @@ export const StyledStartButton = styled.button`
 `;
 
 export const StyledLeaveButton = styled.button`
+  display: flex;
+  align-self: center;
+  justify-content: center;
   box-sizing: border-box;
   margin: ${props => (props.windowWidth > props.windowHeight ? '0 0 0 1vw' : '5vw 0 0 1vw')};
   min-height: 5vh;
@@ -59,12 +66,11 @@ export const StyledLeaveButton = styled.button`
 `;
 
 export const StyledSoundWrapper = styled.div`
-  display: flex;
+  display: flex row;
   overflow: auto;
 `;
 
 export const StyledMuteButton = styled.button`
-  box-sizing: border-box;
   margin: ${props => (props.windowWidth > props.windowHeight ? '5vh 0 0 0' : '5vw 0 0 0')};
   min-height: ${props => (props.windowWidth > props.windowHeight ? '10vh' : '5vh')};
   min-width: ${props => (props.windowWidth > props.windowHeight ? '9vw' : '9vw')};
@@ -81,10 +87,10 @@ export const StyledMuteButton = styled.button`
 `;
 
 export const StyledVolumeButton = styled.button`
-  box-sizing: border-box;
-  margin: ${props => (props.windowWidth > props.windowHeight ? '5vh 0 0 0' : '5vw 0 0 0')};
-  min-height: ${props => (props.windowWidth > props.windowHeight ? '10vh' : '5vh')};
-  min-width: ${props => (props.windowWidth > props.windowHeight ? '4vw' : '4vw')};
+  min-height: 4vw;
+  max-height: 4vw;
+  max-width: 4w;
+  min-width: 4w;
   border-radius: 50%;
   border: none;
   color: white;
