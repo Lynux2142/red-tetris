@@ -1,30 +1,30 @@
-import React, { useContext, useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import React, {useContext, useEffect, useState} from 'react';
+import {useHistory} from 'react-router-dom';
 import Tetris from './Tetris/Tetris';
-import SocketContext from "../../containers/context";
-import useInterval from "./Tetris/useInterval";
-import movment from "./Tetris/movments";
-import Menu from "../Menu/Menu";
-import PlayersData from "../PlayersData/PlayersData";
-import { StyledGame } from "../styles/StyledGame";
-import { StyledCell, StyledRow } from "../styles/StyledCell";
-import useWindowDimensions from "../../hooks/useWindowDimensions";
+import SocketContext from '../../containers/context';
+import useInterval from './Tetris/useInterval';
+import movment from './Tetris/movments';
+import Menu from '../Menu/Menu';
+import PlayersData from '../PlayersData/PlayersData';
+import {StyledGame} from '../styles/StyledGame';
+import {StyledCell, StyledRow} from '../styles/StyledCell';
+import useWindowDimensions from '../../hooks/useWindowDimensions';
+import { createGrid, HEIGHT, WIDTH } from '../../gameHelpers';
 
 const Game = () => {
-  const { windowHeight, windowWidth } = useWindowDimensions();
-  const WIDTH = 10;
-  const HEIGHT = 20;
+  const {windowHeight, windowWidth} = useWindowDimensions();
   const [start, setStart] = useState(false);
   const [tetriList, setTetriList] = useState([]);
   const [tetri, setTetri] = useState({});
   const [tetriShadow, setTetriShadow] = useState({});
   const [backGrid, setBackGrid] = useState(
-    new Array(HEIGHT).fill().map((row) => new Array(WIDTH).fill("white"))
+    new Array(HEIGHT).fill().map((row) => new Array(WIDTH).fill('white'))
   );
   const [frontGrid, setFrontGrid] = useState(
     new Array(HEIGHT).fill().map((row) => new Array(WIDTH).fill(0))
   );
   const [HTMLgrid, setHTMLgrid] = useState([]);
+  const [grid, setGrid] = useState(createGrid());
 
   const socket = useContext(SocketContext);
   const [players, setPlayers] = useState({});
@@ -45,7 +45,7 @@ const Game = () => {
         realPos.x >= WIDTH ||
         realPos.y < 0 ||
         realPos.y >= HEIGHT ||
-        backGrid[realPos.y][realPos.x] !== "white"
+        backGrid[realPos.y][realPos.x] !== 'white'
       );
     });
     return result ? true : false;
@@ -77,10 +77,10 @@ const Game = () => {
     let newGrid = [...backGrid];
     let score = 0;
     backGrid.map((row, i) => {
-      if (!row.find(value => (value === "white" || value === "grey"))) {
+      if (!row.find(value => (value === 'white' || value === 'grey'))) {
         score += 100;
         newGrid.splice(i, 1);
-        newGrid.splice(0, 0, new Array(WIDTH).fill("white"));
+        newGrid.splice(0, 0, new Array(WIDTH).fill('white'));
         socket.emit('sendBlackbar');
       }
     });
@@ -153,20 +153,15 @@ const Game = () => {
   };
 
   useEffect(() => {
-    let HTMLgrid = [];
+    let prevGrid = grid;
     for (let y = 0; y < HEIGHT; ++y) {
       let row = [];
       for (let x = 0; x < WIDTH; ++x) {
-        row.push(
-          <StyledCell className='cell'
-            color={frontGrid[y][x] ? tetri.color : backGrid[y][x]}
-            key={`${y * WIDTH + x}`}
-          ></StyledCell>
-        );
+        row.push([`${y * WIDTH + x}`, frontGrid[y][x] ? tetri.color : backGrid[y][x]]);
       }
-      HTMLgrid.push(<StyledRow key={`${y}`}>{row}</StyledRow>);
+      tmpGrid.push(<StyledRow key={`${y}`}>{row}</StyledRow>);
     }
-    setHTMLgrid(HTMLgrid);
+    setGrid(tmpGrid);
   }, [frontGrid]);
 
   useInterval(() => {
@@ -182,7 +177,7 @@ const Game = () => {
   useEffect(() => {
     socket.on('getBlackbar', () => {
       setBackGrid(prev => {
-        prev.splice(HEIGHT, 0, new Array(WIDTH).fill("grey"));
+        prev.splice(HEIGHT, 0, new Array(WIDTH).fill('grey'));
         prev.splice(0, 1);
         return (prev);
       });
@@ -205,7 +200,7 @@ const Game = () => {
       const newTetri = tetriminos.shift();
       let newGrid = [...backGrid];
       setStart(true);
-      newGrid = newGrid.map((row) => row.map((value) => "white"));
+      newGrid = newGrid.map((row) => row.map((value) => 'white'));
       setBackGrid(newGrid);
       setTetriList([...tetriminos]);
       setTetri(newTetri);
@@ -248,22 +243,23 @@ const Game = () => {
     <div className='container'>
       <h1>{room.name}</h1>
       <StyledGame id="gameSection"
-      windowWidth={windowWidth}
-      windowHeight={windowHeight}
-      role="button"
-      tabIndex="0"
-      onKeyDown={(e) => {
-        window.addEventListener('keydown', (e) => {
-          if ([32, 37, 38, 39, 40].indexOf(e.keyCode) > -1) {
-            e.preventDefault();
-          }
-        }, false);
-        handlerKeydown(e);
-      }}>
-        <Menu gameOver={gameOver} startGame={startGame} score={score} gameStarted={start}/>
+                  windowWidth={windowWidth}
+                  windowHeight={windowHeight}
+                  role="button"
+                  tabIndex="0"
+                  onKeyDown={(e) => {
+                    window.addEventListener('keydown', (e) => {
+                      if ([32, 37, 38, 39, 40].indexOf(e.keyCode) > -1) {
+                        e.preventDefault();
+                      }
+                    }, false);
+                    handlerKeydown(e);
+                  }}>
+        <Menu gameOver={gameOver} startGame={startGame} score={score}
+              gameStarted={start}/>
         <Tetris
-          HTMLgrid={HTMLgrid} />
-        <PlayersData players={players} />
+          grid={HTMLgrid}/>
+        <PlayersData players={players}/>
       </StyledGame>
     </div>
   );
