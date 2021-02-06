@@ -1,10 +1,11 @@
 import React from "react";
 import { StyledTetris } from "../../styles/StyledTetris";
+import Cell from '../Cell';
 
-const Tetris = (props) => {
+const Tetris = ({ grid }) => {
   return (
       <StyledTetris>
-          {props.HTMLgrid}
+        { grid.map(row => row.map((cell, x) => <Cell key={x} color={cell.color} />))}
       </StyledTetris>
   );
 };
