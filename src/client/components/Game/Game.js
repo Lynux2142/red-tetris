@@ -11,7 +11,6 @@ import { StyledGame } from "../styles/StyledGame";
 const Game = () => {
   const WIDTH = 10;
   const HEIGHT = 20;
-  const [start, setStart] = useState(false);
   const [tetriList, setTetriList] = useState([]);
   const [tetri, setTetri] = useState({});
   const [tetriShadow, setTetriShadow] = useState({});
@@ -26,7 +25,7 @@ const Game = () => {
   const socket = useContext(SocketContext);
   const [players, setPlayers] = useState({});
   const [room, setRoom] = useState({});
-  const [gameOver, setGameOver] = useState(false);
+  const [gameOver, setGameOver] = useState(true);
   const [score, setScore] = useState(0);
   const history = useHistory();
   const regex = /#([a-zA-Z]+)\[([a-zA-Z]+)\]/;
@@ -118,6 +117,7 @@ const Game = () => {
       fillTetri(newTetri);
     } else {
       setGameOver(true);
+      socket.emit('playerLose');
     }
     socket.emit('updateSpectrum', getSpectrum(newGrid));
   };
@@ -171,7 +171,7 @@ const Game = () => {
   }, [frontGrid]);
 
   useInterval(() => {
-    if (!gameOver && start) {
+    if (!gameOver) {
       if (!testCollision(movment.Down(tetri))) {
         fillTetri(movment.Down(tetri));
       } else {
@@ -204,7 +204,6 @@ const Game = () => {
     // Reset everything
     const newTetri = tetriminos;
     let newGrid = [...backGrid];
-    setStart(true);
     newGrid = newGrid.map((row) => row.map((value) => "white"));
     setBackGrid(newGrid);
     setTetriList([...set]);
@@ -237,8 +236,13 @@ const Game = () => {
           history.push('/Rooms');
           alert(error);
         } else {
-          setRoom(room);
-          setPlayers(room.players);
+          if (room.gameInProgress) {
+            history.push('/Rooms');
+            alert('Game in Progress');
+          } else {
+            setRoom(room);
+            setPlayers(room.players);
+          }
         }
       });
     }

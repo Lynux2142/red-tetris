@@ -102,17 +102,39 @@ const initEngine = (io) => {
     });
 
     socket.on('start', (callback) => {
+      const playerRoom = players[socket.id].room;
       let setTetris = [];
       let tetri;
       for (let i = 0 ; i < 4 ; ++i) {
         setTetris.push(tetriList[Math.floor(Math.random() * 6)]);
       }
       tetri = setTetris.shift();
-      Object.keys(rooms[players[socket.id].room].players).map(key => rooms[players[socket.id].room].players[key].spectrum = [20, 20, 20, 20, 20, 20, 20, 20, 20, 20]);
-      socket.emit('updatePlayers', rooms[players[socket.id].room].players);
-      socket.to(rooms[players[socket.id].room]).broadcast.emit('updatePlayers', rooms[players[socket.id].room].players);
-      socket.to(players[socket.id].room).broadcast.emit('getSetTetris', tetri, [...setTetris]);
+      Object.keys(rooms[playerRoom].players).map(key => rooms[playerRoom].players[key].alive = true);
+      Object.keys(rooms[playerRoom].players).map(key => rooms[playerRoom].players[key].spectrum = [20, 20, 20, 20, 20, 20, 20, 20, 20, 20]);
+      socket.emit('updatePlayers', rooms[playerRoom].players);
+      socket.to(rooms[playerRoom]).broadcast.emit('updatePlayers', rooms[playerRoom].players);
+      socket.to(playerRoom).broadcast.emit('getSetTetris', tetri, [...setTetris]);
+      rooms[playerRoom].startGame();
+      socket.emit('updateRooms', rooms);
+      socket.broadcast.emit('updateRooms', rooms);
       callback(tetri, [...setTetris]);
+    });
+
+    socket.on('playerLose', () => {
+      rooms[players[socket.id].room].players[socket.id].alive = false;
+      if (Object.keys(rooms[players[socket.id].room].players).find(key => {
+        return (rooms[players[socket.id].room].players[key].alive === true);
+      })) {
+        rooms[players[socket.id].room].stopGame();
+        socket.emit('updateRooms', rooms);
+        socket.broadcast.emit('updateRooms', rooms);
+      }
+    });
+
+    socket.on('stop', () => {
+      rooms[players[socket.id].room].stopGame();
+      socket.emit('updateRooms', rooms);
+      socket.broadcast.emit('updateRooms', rooms);
     });
 
     socket.on('leaveRoom', () => {

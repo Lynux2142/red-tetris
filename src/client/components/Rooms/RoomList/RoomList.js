@@ -10,7 +10,7 @@ const RoomList = ({ rooms, createRoom, joinRoom }) => {
           return (
             <li className='list-group-item p-1' key={i}>
               <label><b>{rooms[key].name}</b> <b>({Object.keys(rooms[key].players).length})</b></label>
-              <button className='btn btn-danger float-right' onClick={() => joinRoom(rooms[key].name)}>Join</button>
+              <button className='btn btn-danger float-right' disabled={rooms[key].gameInProgress} onClick={() => joinRoom(rooms[key].name)}>Join</button>
             </li>
           );
         })
