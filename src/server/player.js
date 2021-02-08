@@ -3,6 +3,7 @@ class Player {
     this.name = name;
     this.id = id;
     this.room = null;
+    this.alive = false;
     this.spectrum = [20, 20, 20, 20, 20, 20, 20, 20, 20, 20];
   }
 
