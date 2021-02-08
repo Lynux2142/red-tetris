@@ -109,7 +109,9 @@ const initEngine = (io) => {
         setTetris.push(tetriList[Math.floor(Math.random() * 6)]);
       }
       tetri = setTetris.shift();
-      Object.keys(rooms[playerRoom].players).map(key => rooms[playerRoom].players[key].alive = true);
+      Object.keys(rooms[playerRoom].players).map(key => {
+        return (rooms[playerRoom].players[key].alive = (rooms[playerRoom].players[key].name === 'playertest') ? false : true);
+      });
       Object.keys(rooms[playerRoom].players).map(key => rooms[playerRoom].players[key].spectrum = [20, 20, 20, 20, 20, 20, 20, 20, 20, 20]);
       socket.emit('updatePlayers', rooms[playerRoom].players);
       socket.to(rooms[playerRoom]).broadcast.emit('updatePlayers', rooms[playerRoom].players);
@@ -121,11 +123,12 @@ const initEngine = (io) => {
     });
 
     socket.on('playerLose', () => {
-      rooms[players[socket.id].room].players[socket.id].alive = false;
-      if (Object.keys(rooms[players[socket.id].room].players).find(key => {
-        return (rooms[players[socket.id].room].players[key].alive === true);
+      const playerRoom = players[socket.id].room;
+      rooms[playerRoom].players[socket.id].alive = false;
+      if (!Object.keys(rooms[playerRoom].players).find(key => {
+        return (rooms[playerRoom].players[key].alive === true);
       })) {
-        rooms[players[socket.id].room].stopGame();
+        rooms[playerRoom].stopGame();
         socket.emit('updateRooms', rooms);
         socket.broadcast.emit('updateRooms', rooms);
       }
