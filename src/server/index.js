@@ -141,6 +141,15 @@ const initEngine = (io) => {
     });
 
     socket.on('leaveRoom', () => {
+      if (players[socket.id]) {
+        const playerRoom = players[socket.id].room;
+        rooms[playerRoom].players[socket.id].alive = false;
+        if (!Object.keys(rooms[playerRoom].players).find(key => {
+          return (rooms[playerRoom].players[key].alive === true);
+        })) {
+          rooms[playerRoom].stopGame();
+        }
+      }
       leaveRoom(socket);
       socket.emit('updateRooms', rooms);
       socket.broadcast.emit('updateRooms', rooms);
