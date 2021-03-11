@@ -121,6 +121,7 @@ const Game = () => {
       fillTetri(newTetri);
     } else {
       setGameOver(true);
+      socket.emit('playerLose');
       setStart(false);
     }
     socket.emit('updateSpectrum', getSpectrum(newGrid));
@@ -210,6 +211,13 @@ const Game = () => {
     });
   }, []);
 
+  const startGame = () => {
+    document.getElementById('gameSection').focus();
+    socket.emit('start', (tetriminos, set) => {
+      initGame(tetriminos, set);
+    });
+  };
+
   useEffect(() => {
     const urlParams = regex.exec(location.hash);
 
@@ -221,8 +229,13 @@ const Game = () => {
           history.push('/Rooms');
           alert(error);
         } else {
-          setRoom(room);
-          setPlayers(room.players);
+          if (room.gameInProgress) {
+            history.push('/Rooms');
+            alert('Game in Progress');
+          } else {
+            setRoom(room);
+            setPlayers(room.players);
+          }
         }
       });
     }
@@ -234,10 +247,11 @@ const Game = () => {
     });
   }, [players, socket]);
 
-  const startGame = (e) => {
-    document.getElementById('gameSection').focus();
-    socket.emit('start');
-  };
+  useEffect(() => {
+    return (() => {
+      socket.emit('leaveRoom');
+    });
+  }, []);
 
   return (
     <div className='container'>

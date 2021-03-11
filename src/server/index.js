@@ -16,14 +16,16 @@ let playertest = new Player('playertest', '1234');
 rooms['roomtest'] = new Room('roomtest', playertest);
 
 const leaveRoom = (socket) => {
-  const playerRoom = players[socket.id].room;
-
-  rooms[playerRoom].removePlayer(players[socket.id]);
-  socket.to(playerRoom).broadcast.emit('updatePlayers', rooms[playerRoom].players);
-  if (rooms[playerRoom].size === 0) {
-    delete rooms[playerRoom];
-    socket.broadcast.emit('updateRooms', (rooms));
+  if (players[socket.id]) {
+    const playerRoom = players[socket.id].room;
+    rooms[playerRoom].removePlayer(players[socket.id]);
+    delete players[socket.id];
+    socket.to(playerRoom).broadcast.emit('updatePlayers', rooms[playerRoom].players);
     socket.leave(playerRoom);
+    if (rooms[playerRoom].size === 0) {
+      delete rooms[playerRoom];
+      socket.broadcast.emit('updateRooms', (rooms));
+    }
   }
 };
 
@@ -99,19 +101,55 @@ const initEngine = (io) => {
       callback(newTetris);
     });
 
-    socket.on('start', () => {
+    socket.on('start', (callback) => {
+      const playerRoom = players[socket.id].room;
       let setTetris = [];
+      let tetri;
       for (let i = 0 ; i < 4 ; ++i) {
         setTetris.push(tetriList[Math.floor(Math.random() * 6)]);
       }
-      Object.keys(rooms[players[socket.id].room].players).map(key => rooms[players[socket.id].room].players[key].spectrum = [20, 20, 20, 20, 20, 20, 20, 20, 20, 20]);
-      socket.emit('updatePlayers', rooms[players[socket.id].room].players);
-      socket.to(rooms[players[socket.id].room]).broadcast.emit('updatePlayers', rooms[players[socket.id].room].players);
-      socket.emit('getSetTetris', [...setTetris]);
-      socket.to(players[socket.id].room).broadcast.emit('getSetTetris', [...setTetris]);
+      tetri = setTetris.shift();
+      Object.keys(rooms[playerRoom].players).map(key => {
+        return (rooms[playerRoom].players[key].alive = (rooms[playerRoom].players[key].name === 'playertest') ? false : true);
+      });
+      Object.keys(rooms[playerRoom].players).map(key => rooms[playerRoom].players[key].spectrum = [20, 20, 20, 20, 20, 20, 20, 20, 20, 20]);
+      socket.emit('updatePlayers', rooms[playerRoom].players);
+      socket.to(rooms[playerRoom]).broadcast.emit('updatePlayers', rooms[playerRoom].players);
+      socket.to(playerRoom).broadcast.emit('getSetTetris', tetri, [...setTetris]);
+      rooms[playerRoom].startGame();
+      socket.emit('updateRooms', rooms);
+      socket.broadcast.emit('updateRooms', rooms);
+      callback(tetri, [...setTetris]);
+    });
+
+    socket.on('playerLose', () => {
+      const playerRoom = players[socket.id].room;
+      rooms[playerRoom].players[socket.id].alive = false;
+      if (!Object.keys(rooms[playerRoom].players).find(key => {
+        return (rooms[playerRoom].players[key].alive === true);
+      })) {
+        rooms[playerRoom].stopGame();
+        socket.emit('updateRooms', rooms);
+        socket.broadcast.emit('updateRooms', rooms);
+      }
+    });
+
+    socket.on('stop', () => {
+      rooms[players[socket.id].room].stopGame();
+      socket.emit('updateRooms', rooms);
+      socket.broadcast.emit('updateRooms', rooms);
     });
 
     socket.on('leaveRoom', () => {
+      if (players[socket.id]) {
+        const playerRoom = players[socket.id].room;
+        rooms[playerRoom].players[socket.id].alive = false;
+        if (!Object.keys(rooms[playerRoom].players).find(key => {
+          return (rooms[playerRoom].players[key].alive === true);
+        })) {
+          rooms[playerRoom].stopGame();
+        }
+      }
       leaveRoom(socket);
       socket.emit('updateRooms', rooms);
       socket.broadcast.emit('updateRooms', rooms);
