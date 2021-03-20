@@ -9,7 +9,7 @@ import PlayersData from '../PlayersData/PlayersData';
 import {StyledGame} from '../styles/StyledGame';
 import {StyledCell, StyledRow} from '../styles/StyledCell';
 import useWindowDimensions from '../../hooks/useWindowDimensions';
-import { createGrid, HEIGHT, WIDTH } from '../../gameHelpers';
+import { createGrid, GRID_HEIGHT, GRID_WIDTH } from '../../gameHelpers';
 
 const Game = () => {
   const {windowHeight, windowWidth} = useWindowDimensions();
@@ -18,10 +18,10 @@ const Game = () => {
   const [tetri, setTetri] = useState({});
   const [tetriShadow, setTetriShadow] = useState({});
   const [backGrid, setBackGrid] = useState(
-    new Array(HEIGHT).fill().map((row) => new Array(WIDTH).fill('white'))
+    new Array(GRID_HEIGHT).fill().map((row) => new Array(GRID_WIDTH).fill('white'))
   );
   const [frontGrid, setFrontGrid] = useState(
-    new Array(HEIGHT).fill().map((row) => new Array(WIDTH).fill(0))
+    new Array(GRID_HEIGHT).fill().map((row) => new Array(GRID_WIDTH).fill(0))
   );
   const [HTMLgrid, setHTMLgrid] = useState([]);
   const [grid, setGrid] = useState(createGrid());
@@ -44,9 +44,9 @@ const Game = () => {
       };
       return (
         realPos.x < 0 ||
-        realPos.x >= WIDTH ||
+        realPos.x >= GRID_WIDTH ||
         realPos.y < 0 ||
-        realPos.y >= HEIGHT ||
+        realPos.y >= GRID_HEIGHT ||
         backGrid[realPos.y][realPos.x] !== 'white'
       );
     });
@@ -82,7 +82,7 @@ const Game = () => {
       if (!row.find(value => (value === 'white' || value === 'grey'))) {
         score += 100;
         newGrid.splice(i, 1);
-        newGrid.splice(0, 0, new Array(WIDTH).fill('white'));
+        newGrid.splice(0, 0, new Array(GRID_WIDTH).fill('white'));
         socket.emit('sendBlackbar');
       }
     });
@@ -93,9 +93,9 @@ const Game = () => {
 
   const getSpectrum = (newGrid) => {
     let spectrum = [];
-    for (let x = 0; x < WIDTH; ++x) {
+    for (let x = 0; x < GRID_WIDTH; ++x) {
       let tmp = 0;
-      for (let y = 0; y < HEIGHT; ++y) {
+      for (let y = 0; y < GRID_HEIGHT; ++y) {
         if (newGrid[y][x] === 'white') {
           ++tmp;
         }
@@ -157,10 +157,10 @@ const Game = () => {
 
   useEffect(() => {
     let prevGrid = grid;
-    for (let y = 0; y < HEIGHT; ++y) {
+    for (let y = 0; y < GRID_HEIGHT; ++y) {
       let row = [];
-      for (let x = 0; x < WIDTH; ++x) {
-        row.push([`${y * WIDTH + x}`, frontGrid[y][x] ? tetri.color : backGrid[y][x]]);
+      for (let x = 0; x < GRID_WIDTH; ++x) {
+        row.push([`${y * GRID_WIDTH + x}`, frontGrid[y][x] ? tetri.color : backGrid[y][x]]);
       }
       tmpGrid.push(<StyledRow key={`${y}`}>{row}</StyledRow>);
     }
@@ -180,7 +180,7 @@ const Game = () => {
   useEffect(() => {
     socket.on('getBlackbar', () => {
       setBackGrid(prev => {
-        prev.splice(HEIGHT, 0, new Array(WIDTH).fill('grey'));
+        prev.splice(GRID_HEIGHT, 0, new Array(GRID_WIDTH).fill('grey'));
         prev.splice(0, 1);
         return (prev);
       });
