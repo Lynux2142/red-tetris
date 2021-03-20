@@ -2,7 +2,7 @@ import React, {useContext, useEffect, useState} from 'react';
 import {useHistory} from 'react-router-dom';
 import Tetris from './Tetris/Tetris';
 import SocketContext from '../../containers/context';
-import useInterval from './Tetris/useInterval';
+import useInterval from '../../hooks/useInterval';
 import movment from './Tetris/movments';
 import Menu from '../Menu/Menu';
 import PlayersData from '../PlayersData/PlayersData';
