@@ -162,9 +162,9 @@ const Game = () => {
       for (let x = 0; x < GRID_WIDTH; ++x) {
         row.push([`${y * GRID_WIDTH + x}`, frontGrid[y][x] ? tetri.color : backGrid[y][x]]);
       }
-      tmpGrid.push(<StyledRow key={`${y}`}>{row}</StyledRow>);
+      prevGrid.push(<StyledRow key={`${y}`}>{row}</StyledRow>);
     }
-    setGrid(tmpGrid);
+    setGrid(prevGrid);
   }, [frontGrid]);
 
   useInterval(() => {
