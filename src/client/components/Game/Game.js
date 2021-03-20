@@ -3,7 +3,7 @@ import {useHistory} from 'react-router-dom';
 import Tetris from './Tetris/Tetris';
 import SocketContext from '../../containers/context';
 import useInterval from '../../hooks/useInterval';
-import movment from './Tetris/movments';
+import movement from './Tetris/movments';
 import Menu from '../Menu/Menu';
 import PlayersData from '../PlayersData/PlayersData';
 import {StyledGame} from '../styles/StyledGame';
@@ -43,7 +43,7 @@ const Game = () => {
 
   const fillTetriShadow = (tetri) => {
     while (!testCollision(tetri, backGrid)) {
-      tetri = movment.Down(tetri);
+      tetri = movement.Down(tetri);
     }
     tetri = {...tetri, position: {...tetri.position, y: tetri.position.y - 1}};
     setTetriShadow(tetri);
@@ -117,23 +117,23 @@ const Game = () => {
     socket.emit('updateSpectrum', getSpectrum(newGrid));
   };
 
-  const handlerKeydown = (e) => {
+  const handleKeydown = (e) => {
     if (e.keyCode === 37) {
-      if (!testCollision(movment.Left(tetri), backGrid)) {
-        fillTetri(movment.Left(tetri));
+      if (!testCollision(movement.Left(tetri), backGrid)) {
+        fillTetri(movement.Left(tetri));
       }
     } else if (e.keyCode === 39) {
-      if (!testCollision(movment.Right(tetri), backGrid)) {
-        fillTetri(movment.Right(tetri));
+      if (!testCollision(movement.Right(tetri), backGrid)) {
+        fillTetri(movement.Right(tetri));
       }
     } else if (e.keyCode === 38) {
-      if (!testCollision(movment.rotate(tetri), backGrid)) {
-        fillTetri(movment.rotate(tetri));
+      if (!testCollision(movement.rotate(tetri), backGrid)) {
+        fillTetri(movement.rotate(tetri));
       }
     } else if (e.keyCode === 40) {
-      if (!testCollision(movment.Down(tetri), backGrid)) {
+      if (!testCollision(movement.Down(tetri), backGrid)) {
         setScore(prev => prev + 1);
-        fillTetri(movment.Down(tetri));
+        fillTetri(movement.Down(tetri));
       } else {
         collision();
       }
@@ -157,8 +157,8 @@ const Game = () => {
 
   useInterval(() => {
     if (!gameOver && start) {
-      if (!testCollision(movment.Down(tetri), backGrid)) {
-        fillTetri(movment.Down(tetri));
+      if (!testCollision(movement.Down(tetri), backGrid)) {
+        fillTetri(movement.Down(tetri));
       } else {
         collision();
       }
@@ -257,7 +257,7 @@ const Game = () => {
                         e.preventDefault();
                       }
                     }, false);
-                    handlerKeydown(e);
+                    handleKeydown(e);
                   }}>
         <Menu gameOver={gameOver} startGame={startGame} score={score}
               gameStarted={start}/>
