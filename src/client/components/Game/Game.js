@@ -9,7 +9,12 @@ import PlayersData from '../PlayersData/PlayersData';
 import {StyledGame} from '../styles/StyledGame';
 import {StyledCell, StyledRow} from '../styles/StyledCell';
 import useWindowDimensions from '../../hooks/useWindowDimensions';
-import { createGrid, GRID_HEIGHT, GRID_WIDTH } from '../../gameHelpers';
+import {
+  createGrid,
+  GRID_HEIGHT,
+  GRID_WIDTH,
+  testCollision
+} from '../../gameHelpers';
 
 const Game = () => {
   const {windowHeight, windowWidth} = useWindowDimensions();
@@ -36,25 +41,8 @@ const Game = () => {
 
   console.log('re-render');
 
-  const testCollision = (newTetri) => {
-    let result = newTetri.points.find((value) => {
-      const realPos = {
-        x: newTetri.position.x + value.x,
-        y: newTetri.position.y + value.y,
-      };
-      return (
-        realPos.x < 0 ||
-        realPos.x >= GRID_WIDTH ||
-        realPos.y < 0 ||
-        realPos.y >= GRID_HEIGHT ||
-        backGrid[realPos.y][realPos.x] !== 'white'
-      );
-    });
-    return !!result;
-  };
-
   const fillTetriShadow = (tetri) => {
-    while (!testCollision(tetri)) {
+    while (!testCollision(tetri, backGrid)) {
       tetri = movment.Down(tetri);
     }
     tetri = {...tetri, position: {...tetri.position, y: tetri.position.y - 1}};
@@ -118,7 +106,7 @@ const Game = () => {
         setTetriList(prev => [...prev, tetriminos]);
       });
     }
-    if (!testCollision(newTetri)) {
+    if (!testCollision(newTetri, backGrid)) {
       newGrid = removeCompletLine();
       fillTetri(newTetri);
     } else {
@@ -131,19 +119,19 @@ const Game = () => {
 
   const handlerKeydown = (e) => {
     if (e.keyCode === 37) {
-      if (!testCollision(movment.Left(tetri))) {
+      if (!testCollision(movment.Left(tetri), backGrid)) {
         fillTetri(movment.Left(tetri));
       }
     } else if (e.keyCode === 39) {
-      if (!testCollision(movment.Right(tetri))) {
+      if (!testCollision(movment.Right(tetri), backGrid)) {
         fillTetri(movment.Right(tetri));
       }
     } else if (e.keyCode === 38) {
-      if (!testCollision(movment.rotate(tetri))) {
+      if (!testCollision(movment.rotate(tetri), backGrid)) {
         fillTetri(movment.rotate(tetri));
       }
     } else if (e.keyCode === 40) {
-      if (!testCollision(movment.Down(tetri))) {
+      if (!testCollision(movment.Down(tetri), backGrid)) {
         setScore(prev => prev + 1);
         fillTetri(movment.Down(tetri));
       } else {
@@ -169,7 +157,7 @@ const Game = () => {
 
   useInterval(() => {
     if (!gameOver && start) {
-      if (!testCollision(movment.Down(tetri))) {
+      if (!testCollision(movment.Down(tetri), backGrid)) {
         fillTetri(movment.Down(tetri));
       } else {
         collision();
