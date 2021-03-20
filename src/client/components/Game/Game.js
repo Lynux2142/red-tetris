@@ -50,7 +50,7 @@ const Game = () => {
         backGrid[realPos.y][realPos.x] !== 'white'
       );
     });
-    return result ? true : false;
+    return !!result;
   };
 
   const fillTetriShadow = (tetri) => {
