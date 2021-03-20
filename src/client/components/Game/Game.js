@@ -34,6 +34,8 @@ const Game = () => {
   const history = useHistory();
   const regex = /#([a-zA-Z]+)\[([a-zA-Z]+)\]/;
 
+  console.log('re-render');
+
   const testCollision = (newTetri) => {
     let result = newTetri.points.find((value) => {
       const realPos = {
