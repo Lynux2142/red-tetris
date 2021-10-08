@@ -1,44 +1,52 @@
 import { useState, useEffect } from 'react';
 import { createGrid } from '../gameHelpers';
 
-export const useGrid = (player, resetPlayer) => {
+export const useGrid = (tetrimino, resetTetrimino) => {
   const [grid, setGrid] = useState(createGrid());
-  const [rowsCleared, setRowsCleared] = useState(0);
+  const [rowsClearedNb, setRowsClearedNb] = useState(0);
 
   useEffect(() => {
-    setRowsCleared(0);
+    setRowsClearedNb(0);
 
     const removeRows = newGrid =>
-      // ack for accumulator
-      newGrid.reduce((ack, row) => {
-        if (row.findIndex(cell => cell[0] === 0) === -1) {
-          setRowsCleared(prev => prev + 1);
-          ack.unshift(new Array(newGrid[0].length).fill([0, 'clear']));
-          return ack;
+      // La méthode reduce() applique une fonction qui est un « accumulateur »
+      // et qui traite chaque valeur d'une liste (de la gauche vers la droite)
+      // afin de la réduire à une seule valeur.
+      newGrid.reduce((accumulator, rowValue) => {
+        // La méthode findIndex() renvoie l'indice du premier élément du tableau
+        // qui satisfait une condition donnée par une fonction. Si la fonction
+        // renvoie faux pour tous les éléments du tableau, le résultat vaut -1.
+        if (rowValue.findIndex(cell => cell[0] === 0) === -1) {
+          setRowsClearedNb(prev => prev + 1);
+          // La méthode unshift() ajoute un ou plusieurs éléments au début d'un
+          // tableau et renvoie la nouvelle longueur du tableau.
+          accumulator.unshift(new Array(newGrid[0].length).fill([0, 'white']));
+          return accumulator;
         }
-        ack.push(row);
-        return ack;
+        accumulator.push(rowValue);
+        return accumulator;
       }, []);
+
     const updateGrid = prevGrid => {
       // First flush the grid
       const newGrid = prevGrid.map(row =>
-        row.map(cell => (cell[1] === 'clear' ? [0, 'clear'] : cell))
+        row.map(cell => (cell[1] === 'white' ? [0, 'white'] : cell))
       );
 
       // Then draw the tetromino
-      player.tetromino.forEach((row, y) => {
+      tetrimino.tetromino.forEach((row, y) => {
         row.forEach((value, x) => {
           if (value !== 0) {
-            newGrid[y + player.pos.y][x + player.pos.x] = [
+            newGrid[y + tetrimino.pos.y][x + tetrimino.pos.x] = [
               value,
-              `${player.collided ? 'merged' : 'clear'}`,
+              `${tetrimino.collided ? 'merged' : 'white'}`,
             ];
           }
         });
       });
       // Then check if we collided
-      if (player.collided) {
-        resetPlayer();
+      if (tetrimino.collided) {
+        resetTetrimino();
         return removeRows(newGrid);
       }
 
@@ -46,7 +54,7 @@ export const useGrid = (player, resetPlayer) => {
 
     };
     setGrid(prev => updateGrid(prev));
-  }, [player, resetPlayer]);
+  }, [tetrimino, resetTetrimino]);
 
-  return [grid, setGrid, rowsCleared];
+  return [grid, setGrid, rowsClearedNb];
 };

@@ -3,24 +3,25 @@ import {useHistory} from 'react-router-dom';
 import Tetris from './Tetris/Tetris';
 import SocketContext from '../../containers/context';
 import useInterval from '../../hooks/useInterval';
-import movement from './Tetris/movments';
+import movement from './Tetris/movements';
 import Menu from '../Menu/Menu';
 import PlayersData from '../PlayersData/PlayersData';
 import {StyledGame} from '../styles/StyledGame';
 import {StyledCell, StyledRow} from '../styles/StyledCell';
 import useWindowDimensions from '../../hooks/useWindowDimensions';
 import {
-  createGrid,
+  BLACK_RGB,
+  createGrid, GREY_RGB,
   GRID_HEIGHT,
   GRID_WIDTH,
-  testCollision
+  testCollision, WHITE_RGB
 } from '../../gameHelpers';
+import {useGrid} from '../../hooks/useGrid';
+import {useTetrimino} from '../../hooks/useTetrimino';
 
 const Game = () => {
   const {windowHeight, windowWidth} = useWindowDimensions();
   const [start, setStart] = useState(false);
-  const [tetriList, setTetriList] = useState([]);
-  const [tetri, setTetri] = useState({});
   const [tetriShadow, setTetriShadow] = useState({});
   const [backGrid, setBackGrid] = useState(
     new Array(GRID_HEIGHT).fill().map((row) => new Array(GRID_WIDTH).fill('white'))
@@ -29,7 +30,8 @@ const Game = () => {
     new Array(GRID_HEIGHT).fill().map((row) => new Array(GRID_WIDTH).fill(0))
   );
   const [HTMLgrid, setHTMLgrid] = useState([]);
-  const [grid, setGrid] = useState(createGrid());
+  const [tetrimino, setTetrimino, tetriList, setTetriList] = useTetrimino();
+  const [grid, setGrid, rowsClearedNb] = useGrid(tetrimino, resetTetrimino);
 
   const socket = useContext(SocketContext);
   const [players, setPlayers] = useState({});
@@ -63,28 +65,28 @@ const Game = () => {
     setFrontGrid([...newGrid]);
   };
 
-  const removeCompletLine = () => {
-    let newGrid = [...backGrid];
-    let score = 0;
-    backGrid.map((row, i) => {
-      if (!row.find(value => (value === 'white' || value === 'grey'))) {
-        score += 100;
-        newGrid.splice(i, 1);
-        newGrid.splice(0, 0, new Array(GRID_WIDTH).fill('white'));
-        socket.emit('sendBlackbar');
-      }
-    });
-    setScore(prev => prev + (score === 400 ? score * 2 : score));
-    setBackGrid(newGrid);
-    return ([...newGrid]);
-  };
+  // const removeCompletLine = () => {
+  //   let newGrid = [...backGrid];
+  //   let score = 0;
+  //   backGrid.map((row, i) => {
+  //     if (!row.find(value => (value === WHITE_RGB || value === GREY_RGB))) {
+  //       score += 100;
+  //       newGrid.splice(i, 1);
+  //       newGrid.splice(0, 0, new Array(GRID_WIDTH).fill(WHITE_RGB));
+  //       socket.emit('sendBlackbar');
+  //     }
+  //   });
+  //   setScore(prev => prev + (score === 400 ? score * 2 : score));
+  //   setBackGrid(newGrid);
+  //   return ([...newGrid]);
+  // };
 
   const getSpectrum = (newGrid) => {
     let spectrum = [];
     for (let x = 0; x < GRID_WIDTH; ++x) {
       let tmp = 0;
       for (let y = 0; y < GRID_HEIGHT; ++y) {
-        if (newGrid[y][x] === 'white') {
+        if (newGrid[y][x] === WHITE_RGB) {
           ++tmp;
         }
       }
@@ -144,16 +146,60 @@ const Game = () => {
   };
 
   useEffect(() => {
-    let prevGrid = grid;
+    let HTMLgrid = [];
+
     for (let y = 0; y < GRID_HEIGHT; ++y) {
       let row = [];
       for (let x = 0; x < GRID_WIDTH; ++x) {
-        row.push([`${y * GRID_WIDTH + x}`, frontGrid[y][x] ? tetri.color : backGrid[y][x]]);
+        row.push(
+          <td className='cell'
+            style={{
+              backgroundColor: (frontGrid[y][x] === 1) ? tetri.color : backGrid[y][x],
+              borderWidth: (frontGrid[y][x] === 2) ? '2px' : '1px',
+              borderColor: (frontGrid[y][x] === 2) ? tetri.color : 'black'
+            }}
+            key={`${y * GRID_WIDTH + x}`}
+          />
+        );
       }
-      prevGrid.push(<StyledRow key={`${y}`}>{row}</StyledRow>);
+      HTMLgrid.push(<tr key={`${y}`}>{row}</tr>);
     }
-    setGrid(prevGrid);
+    setHTMLgrid(HTMLgrid);
   }, [frontGrid]);
+
+  // useEffect(() => {
+  //   let HTMLgrid = [];
+  //
+  //   for (let y = 0; y < GRID_HEIGHT; ++y) {
+  //     let row = [];
+  //     for (let x = 0; x < GRID_WIDTH; ++x) {
+  //       row.push(
+  //         <td className='cell'
+  //           style={{
+  //             backgroundColor: (frontGrid[y][x] === 1) ? tetri.color : backGrid[y][x],
+  //             borderWidth: (frontGrid[y][x] === 2) ? '2px' : '1px',
+  //             borderColor: (frontGrid[y][x] === 2) ? tetri.color : 'black'
+  //           }}
+  //           key={`${y * GRID_WIDTH + x}`}
+  //         />
+  //       );
+  //     }
+  //     HTMLgrid.push(<tr key={`${y}`}>{row}</tr>);
+  //   }
+  //   setHTMLgrid(HTMLgrid);
+  // }, [frontGrid]);
+
+  // useEffect(() => {
+  //   let prevGrid = grid;
+  //   for (let y = 0; y < GRID_HEIGHT; ++y) {
+  //     let row = [];
+  //     for (let x = 0; x < GRID_WIDTH; ++x) {
+  //       row.push([`${y * GRID_WIDTH + x}`, frontGrid[y][x] ? tetri.color : backGrid[y][x]]);
+  //     }
+  //     prevGrid.push(<StyledRow key={`${y}`}>{row}</StyledRow>);
+  //   }
+  //   setGrid(prevGrid);
+  // }, [frontGrid]);
 
   useInterval(() => {
     if (!gameOver && start) {
@@ -165,39 +211,42 @@ const Game = () => {
     }
   }, 1000);
 
-  useEffect(() => {
-    socket.on('getBlackbar', () => {
-      setBackGrid(prev => {
-        prev.splice(GRID_HEIGHT, 0, new Array(GRID_WIDTH).fill('grey'));
-        prev.splice(0, 1);
-        return (prev);
-      });
-      setTetri(prev => {
-        prev.position.y -= 1;
-        return (prev);
-      });
-    });
-  }, []);
+  // useEffect(() => {
+  //   socket.on('getBlackbar', () => {
+  //     setBackGrid(prev => {
+  //       prev.splice(GRID_HEIGHT, 0, new Array(GRID_WIDTH).fill(GREY_RGB));
+  //       prev.splice(0, 1);
+  //       return (prev);
+  //     });
+  //     setTetri(prev => {
+  //       prev.position.y -= 1;
+  //       return (prev);
+  //     });
+  //   });
+  // }, []);
+
+  // useEffect(() => {
+  //   socket.on('newTetris', tetriminos => {
+  //     setTetriList(prev => [...prev, tetriminos]);
+  //   });
+  // }, []);
+
+  const initGame = (tetriminos, set) => {
+    // Reset everything
+    const newTetri = tetriminos;
+    let newGrid = [...backGrid];
+    newGrid = newGrid.map((row) => row.map((value) => WHITE_RGB));
+    setBackGrid(newGrid);
+    setTetriList([...set]);
+    setTetri(newTetri);
+    setGameOver(false);
+    setScore(0);
+    setStart(true);
+  };
 
   useEffect(() => {
-    socket.on('newTetris', tetriminos => {
-      setTetriList(prev => [...prev, tetriminos]);
-    });
-  }, []);
-
-  useEffect(() => {
-    socket.on('getSetTetris', tetriminos => {
-      // Reset everything
-      const newTetri = tetriminos.shift();
-      let newGrid = [...backGrid];
-      setStart(true);
-      newGrid = newGrid.map((row) => row.map((value) => 'white'));
-      setBackGrid(newGrid);
-      setTetriList([...tetriminos]);
-      setTetri(newTetri);
-      fillTetri(newTetri);
-      setGameOver(false);
-      setScore(0);
+    socket.on('getSetTetris', (tetriminos, set) => {
+      initGame(tetriminos, set);
     });
   }, []);
 

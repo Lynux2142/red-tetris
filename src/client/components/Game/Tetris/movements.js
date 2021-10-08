@@ -1,7 +1,10 @@
 import Mat2 from './Matrix.js';
 
 function rotate(tetriminos) {
-  const test = { ...tetriminos, points: tetriminos.points.map(value => Mat2.rotate(value, tetriminos.center, 90 * Math.PI / 180)) };
+  const test = {
+    ...tetriminos,
+    points: tetriminos.points.map(value => Mat2.rotate(value, tetriminos.center, 90 * Math.PI / 180))
+  };
   return (test);
 }
 

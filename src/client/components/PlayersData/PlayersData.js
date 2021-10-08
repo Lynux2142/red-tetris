@@ -3,6 +3,7 @@ import { StyledPlayersData, StyledPlayer } from '../styles/StyledPlayersData';
 import {StyledRow} from '../styles/StyledCell';
 import Tetris from '../Game/Tetris/Tetris';
 import Cell from '../Game/Cell';
+import {BLACK_RGB, WHITE_RGB} from '../../gameHelpers';
 
 const PlayersData = (props) => {
     const WIDTH = 10;
@@ -22,14 +23,14 @@ const PlayersData = (props) => {
     };
 
     const getGridSpectrum = (spectrum) => {
-        new Array(HEIGHT).fill().map((row) => new Array(WIDTH).fill('white'));
+        new Array(HEIGHT).fill().map((row) => new Array(WIDTH).fill(WHITE_RGB));
         let HTMLgrid = [];
         for (let y = 0; y < HEIGHT; ++y) {
             let row = [];
             for (let x = 0; x < WIDTH; ++x) {
                 row.push(
                   <Cell className='cell'
-                              color={spectrum[y] > x ? 'white' : 'black'}
+                              color={spectrum[y] > x ? WHITE_RGB : BLACK_RGB}
                               key={`${y * WIDTH + x}`}
                   />
                 );
@@ -56,7 +57,7 @@ const PlayersData = (props) => {
                                 <td>{props.players[key].score}</td>
                                 <td>
                                     {getSpectrum(props.players[key].spectrum)}
-                                    <Tetris HTMLgrid={getGridSpectrum(props.players[key].spectrum)}/>
+                                    {/*<Tetris HTMLgrid={getGridSpectrum(props.players[key].spectrum)}/>*/}
                                 </td>
                             </StyledPlayer>
                     )

@@ -6,7 +6,15 @@ const Player = require('./player.js');
 const Room = require('./room.js');
 const Tetriminos = require('./tetriminos.js');
 const start = { x: 3, y: 0 };
-const tetriList = [new Tetriminos.I(start), new Tetriminos.J(start), new Tetriminos.L(start), new Tetriminos.O(start), new Tetriminos.S(start), new Tetriminos.T(start), new Tetriminos.Z(start)];
+const tetriList = [
+  new Tetriminos.I(start),
+  new Tetriminos.J(start),
+  new Tetriminos.L(start),
+  new Tetriminos.O(start),
+  new Tetriminos.S(start),
+  new Tetriminos.T(start),
+  new Tetriminos.Z(start)
+];
 const logerror = debug('tetris:ERROR');
 const loginfo = debug('tetris:Info');
 
@@ -30,11 +38,7 @@ const leaveRoom = (socket) => {
 };
 
 const nameAlreadyExist = (data, value) => {
-  return (
-    Object.keys(data).find(key => {
-      return (data[key].name === value);
-    }) ? true : false
-  );
+  return (!!Object.keys(data).find(key => {return (data[key].name === value);}));
 };
 
 const initApp = (server, app, params, cb) => {
